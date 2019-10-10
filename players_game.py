@@ -1,4 +1,8 @@
 import random
+from tabulate import tabulate
+
+from db import agregar_jugador
+
 
 class Player:
 
@@ -13,12 +17,30 @@ class Player:
     def recibir_daño(self, daño):
         self.vida = self.vida - daño
 
+
+
     def esta_vivo(self):
         return self.vida > 0
 
     def __str__(self):
         return f'Categoria: {self.categoria} \nAtaque: {self.ataque} \nDefensa: {self.defensa}' \
                f'\nVida: {self.vida} \nVelocidad: {self.velocidad} \nArma: {self.arma}'
+
+
+class Personajes:
+
+    def __init__(self, nombre, categoria, victorias, derrotas):
+        self.nombre = nombre
+        self.categoria = categoria
+        self.victorias = victorias
+        self.derrotas = derrotas
+
+    def __str__(self):
+        return f'Nombre: {self.nombre} \nCategoria {self.categoria} \nVictorias: {self.victorias}' \
+               f'\nDerrotas: {self.derrotas}\n'
+
+    def save(self):
+        agregar_jugador(self.nombre, self.categoria, self.victorias, self.derrotas)
 
 
 class Caballero(Player):
@@ -53,134 +75,132 @@ class Ladron(Player):
 
 def tablero(jugador):
     recorrer_tablero = 0
-    while True:
+    while jugador.esta_vivo():
         input("Presione cualquier tecla para tirar el dado.")
-        resultado = random.randint(5, 6) #solo debug
-        print("El dado giro y obtuvo: ", resultado)
+        resultado = random.randint(1, 2) #solo debug
+        print("El dado giro y obtuvo: {}".format(resultado))
         recorrer_tablero = recorrer_tablero + resultado
         if recorrer_tablero in (1, 2, 6, 9, 11):
-            print("Usted avanza a la posición:", recorrer_tablero, "\n")
+            print("Usted avanza a la posición: {}\n".format(recorrer_tablero))
             print("Vuelva a tirar el dado\n")
         elif recorrer_tablero in (3, 7):
-            print("Usted avanza a la posición:", recorrer_tablero, "\n")
-            print("Un Orko te ataca!!!\n\n")
-            orko(jugador)
+            print("Usted avanza a la posición: {}\n".format(recorrer_tablero))
+            print("Un Orko te ataca!!!\n")
+            atacar_orko(jugador)
 
         elif recorrer_tablero in (4, 6):
-            print("Usted avanza a la posición:", recorrer_tablero, "\n")
-            print("Un ladron te ataca!!, preparate para la batalla!!")
+            print("Usted avanza a la posición: \n".format(recorrer_tablero))
+            print("Un ladron te ataca!!\n")
             atacar_ladron(jugador)
 
         elif recorrer_tablero in (5, 10):
-            print("Usted avanza a la posición:", recorrer_tablero, "\n")
+            print("Usted avanza a la posición: {}\n".format(recorrer_tablero))
             print("Un elfo oscuro te ataca!!")
-            elfo_oscuro(jugador)
+            atacar_elfo_oscuro(jugador)
 
         elif recorrer_tablero >= 12:
             print("Lucha contra el jefe final!!")
             print("============================")
             print("Ganaste el juego!")
             break
+    else:
+        print("Perdiste, fin del juego!")
 
 
 def atacar_ladron(jugador):
     ladron = Ladron()
-
-    while True:
+    while jugador.esta_vivo():
         input("Presione cualquier tecla para tirar el dado.")
-        resultado_tablero = random.randint(2, 3) #solo debug
+        resultado_tablero = random.randint(1, 2) #solo debug
         print("El dado giro y obtuvo: ", resultado_tablero)
+        print("Ladron: {}\nJugador: {}".format(ladron.vida, jugador.vida)) #debug
 
         if resultado_tablero in (1, 3, 5):
             print("Ataca a tu enemigo, tira el dado")
-            input("Presione cualquier tecla para tirar el dado.")
+            input("Presione Enter para tirar el dado.")
             resultado = random.randint(1, 2)
-            print("El dado giro y obtuvo: ", resultado)
+            print("El dado giro y obtuvo: {}".format(resultado))
             ladron.recibir_daño(resultado)
             if ladron.esta_vivo():
-                print("Al ladron le queda ", ladron.vida, " de vida")
+                print("Ladron: {}\nJugador: {}\n".format(ladron.vida, jugador.vida))
             else:
                 print("Ha ganado la pelea, continue jugando")
                 break
         else:
-            input("El ladron va a atacarte, presiona cualquier tecla para comenzar con la batalla!")
+            input("El ladron va a atacarte, presiona Enter para comenzar con la batalla!")
             resultado = random.randint(1, 2)
-            jugador.recibir_daño(resultado)
-            print("El ladron te saco", resultado, "de vida y te quedan ", jugador.vida, " de energía")
+            jugador.recibir_daño(resultado
+                                 )
             if jugador.esta_vivo():
-                print("Continua")
+                print("Ladron: {}\nJugador: {}\n".format(ladron.vida, jugador.vida))
             else:
-                print("Fin del juego")
-                break
+                print("Ladron: {}\nJugador: 0\n".format(ladron.vida))
 
 
-def elfo_oscuro(jugador):
+def atacar_elfo_oscuro(jugador):
     elfo_oscuro = Elfo_oscuro()
 
     while jugador.esta_vivo():
         input("Presione cualquier tecla para tirar el dado.")
         resultado_tablero = random.randint(1, 2)
-        print("El dado giro y obtuvo: ", resultado_tablero)
+        print("El dado giro y obtuvo: {}".format(resultado_tablero))
 
         if resultado_tablero in (1, 3, 5):
             print("Ataca a tu enemigo, tira el dado")
             input("Presione cualquier tecla para tirar el dado.")
             resultado = random.randint(1, 2)
-            print("El dado giro y obtuvo: ", resultado)
+            print("El dado giro y obtuvo: {}".format(resultado))
             elfo_oscuro.recibir_daño(resultado)
             if elfo_oscuro.esta_vivo():
-                print("Al Elfo Oscuro le queda ", elfo_oscuro.vida, " de vida")
+                print("Elfo Oscuro: {}\nJugador: {}\n".format(elfo_oscuro.vida, jugador.vida))
             else:
                 print("Ha ganado la pelea, continue jugando")
                 break
         else:
-            input("El Elfo Oscuro va a atacarte, presiona cualquier tecla para comenzar con la batalla!")
+            input("El Elfo Oscuro va a atacarte, presiona Enter para continuar!")
             resultado = random.randint(1, 2)
-            jugador.recibir_daño(resultado)
-            print("El Elfo Oscuro te saco", resultado, "de vida y te quedan ", jugador.vida, " de energía")
-
-    else:
-        print("Fin del juego")
-
-
-def orko(jugador):
+            jugador.recibir_daño(resultado)  # solo debug
+            if jugador.esta_vivo():
+                print("Elfo Oscuro: {}\nJugador: {}\n".format(elfo_oscuro.vida, jugador.vida))
+            else:
+                print("Elfo Oscuro: {}\nJugador: 0\n".format(elfo_oscuro.vida))
+                
+                
+def atacar_orko(jugador):
     orko = Orko()
 
-    while True:
-        input("Presione cualquier tecla para tirar el dado.")
+    while jugador.esta_vivo():
+        input("Presione Enter para tirar el dado.")
         resultado_tablero = random.randint(1, 2)
-        print("El dado giro y obtuvo: ", resultado_tablero)
+        print("El dado giro y obtuvo: {}".format(resultado_tablero))
 
         if resultado_tablero in (1, 3, 5):
-            print("Ataca a tu enemigo, tira el dado")
-            input("Presione cualquier tecla para tirar el dado.")
+            print("Ataca a tu enemigo!")
+            input("Presione Enter para tirar el dado.")
             resultado = random.randint(1, 2)
-            print("El dado giro y obtuvo: ", resultado)
+            print("El dado giro y obtuvo: {}".format(resultado))
             orko.recibir_daño(resultado)
             if orko.esta_vivo():
-                print("Orko:", orko.vida, "de vida")
-
+                print("Orko: {}\nJugador: {}\n".format(orko.vida, jugador.vida))
             else:
                 print("Ha ganado la pelea, continue jugando")
                 break
         else:
-            input("El Orko va a atacarte, presiona cualquier tecla para comenzar con la batalla!")
+            input("El Orko va a atacarte, presiona Enter para continuar!")
             resultado = random.randint(1, 2)
             jugador.recibir_daño(resultado)
-            print("El Orko te saco", resultado, "de vida y te quedan ", jugador.vida, " de energía")
             if jugador.esta_vivo():
-                print("Continua")
+                print("Orko: {}\nJugador: {}\n".format(orko.vida, jugador.vida))
             else:
-                print("Fin del juego")
-                break
+                print("Orko: {}\nJugador: 0\n".format(orko.vida))
+
 
 def contar_prologo():
-    input("Presione cualquier tecla para continuar.")
+    input("Presione Enter para continuar.")
     print("Agregar historia aquí (next comming)\n")
 
 
 def reglas_batalla():
-
     while True:
         print("Quiere ver las reglas de la batalla?, Ingrese 'y' o 'n'")
         opcion = input()
@@ -199,5 +219,3 @@ Si tu jugador queda en cero de vida perderás el juego
             break
         else:
             print("La opción ingresada es incorrecta")
-
-

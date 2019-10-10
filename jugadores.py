@@ -1,4 +1,7 @@
-from players_game import Caballero, Mago, Arquero, contar_prologo, reglas_batalla, tablero
+from db import crear_bd
+from players_game import Caballero, Mago, Arquero, contar_prologo, reglas_batalla, tablero, Personajes
+
+from tabulate import tabulate
 
 print("""Bienvenido a Mundo Medieval
 ===========================
@@ -17,39 +20,63 @@ while True:
     2) Mago
     3) Arquero
     """)
+    crear_bd()
 
     opcion = input()
     if opcion == '1':
+
         jugador = Caballero()
         print("Felicitaciones usted elegió al caballero, por favor ingrese un nombre: ")
-        nombre = input()
-        print("Bienvenido al juego Caballero {}.".format(nombre.capitalize()))
 
-        print("=========================================")
-        print("Su jugador tiene los siguientes atributos\n")
-        print(jugador.vida, "\n")
-        break
+        if __name__ == "__main__":
+
+            while True:
+                nombre = input()
+                if len(nombre) < 3 or len(nombre) > 15:
+                    print("El nombre debe contener un minimo de 4 letras y un máximo de 15")
+                else:
+                    print("Bienvenido al juego Caballero {}.".format(nombre.capitalize()))
+                    print("=========================================")
+                    print("Su jugador tiene los siguientes atributos\n")
+                    print(jugador, "\n")
+                    break
+            break
+
+            players_game = Personajes(nombre, categoria, victorias, derrotas)
+            players_game.save()
 
     elif opcion == '2':
         jugador = Mago()
         print("Felicitaciones usted elegió al Mago, por favor ingrese un nombre: ")
-        nombre = input()
-        print("Bienvenido al juego Mago {}.".format(nombre.capitalize()))
 
-        print("======================================")
-        print("Su jugador tiene los siguientes atributos\n")
-        print(jugador, "\n")
+        while True:
+            nombre = input()
+            if len(nombre) < 3 or len(nombre) > 15:
+                print("El nombre debe contener un minimo de 4 letras y un máximo de 15")
+            else:
+                print("Bienvenido al juego Mago {}.".format(nombre.capitalize()))
+
+                print("======================================")
+                print("Su jugador tiene los siguientes atributos\n")
+                print(jugador, "\n")
+                break
         break
 
     elif opcion == '3':
         jugador = Arquero()
         print("Felicitaciones usted elegió al Arquero, por favor ingrese un nombre: ")
-        nombre = input()
-        print("Bienvenido al juego Arquero {}.".format(nombre.capitalize()))
 
-        print("======================================")
-        print("Su jugador tiene los siguientes atributos\n")
-        print(jugador, "\n")
+        while True:
+            nombre = input()
+            if len(nombre) < 3 or len(nombre) > 15:
+                print("El nombre debe contener un minimo de 4 letras y un máximo de 15")
+            else:
+                print("Bienvenido al juego Arquero {}.".format(nombre.capitalize()))
+
+                print("======================================")
+                print("Su jugador tiene los siguientes atributos\n")
+                print(jugador, "\n")
+                break
         break
 
     else:
