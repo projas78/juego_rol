@@ -28,22 +28,22 @@ while True:
         jugador = Caballero()
         print("Felicitaciones usted elegió al caballero, por favor ingrese un nombre: ")
 
-        if __name__ == "__main__":
+        while True:
+            nombre = input()
+            nombre = nombre.capitalize()
+            if len(nombre) < 3 or len(nombre) > 15:
+                print("El nombre debe contener un minimo de 4 letras y un máximo de 15")
+            else:
+                print("Bienvenido al juego Caballero {}.".format(nombre)) ##mostrar desde la clase
+                print("=========================================")
+                print("Su jugador tiene los siguientes atributos\n")
+                print(jugador, "\n")
+                break
 
-            while True:
-                nombre = input()
-                if len(nombre) < 3 or len(nombre) > 15:
-                    print("El nombre debe contener un minimo de 4 letras y un máximo de 15")
-                else:
-                    print("Bienvenido al juego Caballero {}.".format(nombre.capitalize()))
-                    print("=========================================")
-                    print("Su jugador tiene los siguientes atributos\n")
-                    print(jugador, "\n")
-                    break
-            break
+        players_game = Personajes(nombre, jugador.categoria, 0, 0)
+        players_game.save()
 
-            players_game = Personajes(nombre, categoria, victorias, derrotas)
-            players_game.save()
+        break
 
     elif opcion == '2':
         jugador = Mago()

@@ -17,8 +17,6 @@ class Player:
     def recibir_daño(self, daño):
         self.vida = self.vida - daño
 
-
-
     def esta_vivo(self):
         return self.vida > 0
 
@@ -77,12 +75,16 @@ def tablero(jugador):
     recorrer_tablero = 0
     while jugador.esta_vivo():
         input("Presione cualquier tecla para tirar el dado.")
-        resultado = random.randint(1, 2) #solo debug
+        resultado = random.randint(1, 3) #solo debug
         print("El dado giro y obtuvo: {}".format(resultado))
         recorrer_tablero = recorrer_tablero + resultado
-        if recorrer_tablero in (1, 2, 6, 9, 11):
+        if recorrer_tablero in (1, 2, 11):
             print("Usted avanza a la posición: {}\n".format(recorrer_tablero))
             print("Vuelva a tirar el dado\n")
+        elif recorrer_tablero == 9:
+            jugador.vida += 2
+            print("Escontraste un arbol de manzanas y comes una, recuperas 2 de energía:", jugador.vida)
+
         elif recorrer_tablero in (3, 7):
             print("Usted avanza a la posición: {}\n".format(recorrer_tablero))
             print("Un Orko te ataca!!!\n")
@@ -219,3 +221,36 @@ Si tu jugador queda en cero de vida perderás el juego
             break
         else:
             print("La opción ingresada es incorrecta")
+
+
+def ms_cueva_Sorginak(jugador):
+    print("""Te cruzaste con la cueva de Sorginak.\n Cuando entres veras que hay 2 caminos. Ten cuidado porque la cueva 
+es maǵica y las entradas todo el tiempo cambian de lugar (No siempre el número que eligas sera la misma entrada).
+
+Las 2 entradas pueden darte lo siguiente:
+
+Duplica tu vida actual
+Mueres
+
+Elige un número entre 1 o 2 y deja que el destino haga el resto!!
+    """)
+    while True:
+        opcion = input("Ingresa 1 o 2")
+        if opcion == '1':
+            print("Duplica tu vida actual")
+            jugador.vida = jugador.vida * 2
+
+        elif opcion == '2':
+            jugador.vida = 0
+
+            print("Mueres")
+            break
+
+        else:
+            print("Opcion incorrecta.")
+
+## 1 - Duplica tu vida maxima al doble.
+## 2 - Recupera tu vida al 100%
+## 3 - Te resta tu vida actual a la mitad.
+## 4 - Te deja tu vida en cero y termina la partida.
+## 5 - Al entrar por esa entrada vuelves a la posicion que estabas con la misma vida que tenias.
