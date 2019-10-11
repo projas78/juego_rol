@@ -1,4 +1,4 @@
-from db import crear_bd
+from db import crear_bd, lista_jugadores
 from players_game import Caballero, Mago, Arquero, contar_prologo, reglas_batalla, tablero, Personajes, ingresar_nombre
 
 from tabulate import tabulate
@@ -13,6 +13,8 @@ Reglas del juego
 4 - Cada Casillero puede tener un desafío
 5 - Para ganar deberá vencer todos los desafios y al jefe final.
 """)
+
+lista_jugadores()
 
 while True:
     print("""¿Qué jugador quiere elegir?
