@@ -249,6 +249,23 @@ Elige un número entre 1 o 2 y deja que el destino haga el resto!!
         else:
             print("Opcion incorrecta.")
 
+def ingresar_nombre(jugador):
+    while True:
+        print("Felicitaciones usted elegió al", jugador.categoria, ",por favor ingrese un nombre: ")
+        nombre = input()
+        nombre = nombre.capitalize()
+        if len(nombre) < 3 or len(nombre) > 15:
+            print("El nombre debe contener un minimo de 4 letras y un máximo de 15")
+        else:
+            print("Bienvenido al juego", jugador.categoria,"{}.".format(nombre))  ##mostrar desde la clase
+            print("=========================================")
+            print("Su jugador tiene los siguientes atributos\n")
+            print(jugador, "\n")
+            break
+
+    players_game = Personajes(nombre, jugador.categoria, 0, 0)
+    players_game.save()
+
 ## 1 - Duplica tu vida maxima al doble.
 ## 2 - Recupera tu vida al 100%
 ## 3 - Te resta tu vida actual a la mitad.
