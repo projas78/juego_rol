@@ -31,6 +31,7 @@ def agregar_jugador(nombre, categoria, victorias, derrotas):
     conexion.commit()
     conexion.close()
 
+
 def lista_jugadores():
     conexion = sqlite3.connect('jugadores.db')
     cursor = conexion.cursor()
@@ -41,14 +42,6 @@ def lista_jugadores():
     for jugador in jugadores:
         list_jugadores.append(jugador[0])
 
-    opcion = input("¡Desea crear un usuario nuevo o usar uno existente?")
-    if opcion.lower() == 'y':
-        nombre = input("Ingrese el nombre de su usuario")
-        if nombre in list_jugadores:
-            print("Bienvenido otra vez", nombre)
-
-        else:
-            print("El usuario ingresado no existe")
-
-    conexion.commit()
     conexion.close()
+
+    return list_jugadores

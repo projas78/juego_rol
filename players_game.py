@@ -1,7 +1,9 @@
 import random
+import sqlite3
+
 from tabulate import tabulate
 
-from db import agregar_jugador
+from db import agregar_jugador, lista_jugadores
 
 
 class Player:
@@ -249,22 +251,97 @@ Elige un número entre 1 o 2 y deja que el destino haga el resto!!
         else:
             print("Opcion incorrecta.")
 
-def ingresar_nombre(jugador):
+def mostrar_reglas():
+    print("""Bienvenido a Mundo Medieval
+    ===========================
+    Reglas del juego
+    ================
+    1 - Deberás elegir entre ser un Caballero, un Mago o un Arquero.  Cada uno tiene habilidades diferentes
+    2 - Tirar un dado con los números entre 1 al 6
+    3 - El número que salga es la cantidad de casilleros que deberá avanzar.
+    4 - Cada Casillero puede tener un desafío
+    5 - Para ganar deberá vencer todos los desafios y al jefe final.
+    """)
+
+
+def ingresar_nombre():
+    jugadores = lista_jugadores()
+
+    opcion = input("¿Desea crear un usuario nuevo o usar uno existente?, seleccione 'n' (nuevo) o 'e' (existente)\n")
     while True:
-        print("Felicitaciones usted elegió al", jugador.categoria, ",por favor ingrese un nombre: ")
-        nombre = input()
-        nombre = nombre.capitalize()
-        if len(nombre) < 3 or len(nombre) > 15:
-            print("El nombre debe contener un minimo de 4 letras y un máximo de 15")
+        if opcion.lower() == 'e':
+            nombre = input("Ingrese el nombre de su usuario\n")
+            if nombre in jugadores:
+                print("Bienvenido otra vez", nombre)
+                break
+            else:
+                print("El usuario ingresado no existe")
+        elif opcion.lower() == 'n':
+            nombre = input("Ingrese un nombre para poder crear su usuario\n")
+            if len(nombre) < 3 or len(nombre) > 15:
+                print("El nombre debe contener un minimo de 4 letras y un máximo de 15")
+
+            elif nombre not in jugadores:
+                print("Bienvenido al juego", nombre, "Que comience el juego!!")
+
+                break
+            else:
+                print("El nombre de usuario ya esta en uso, por favor eliga otro")
         else:
-            print("Bienvenido al juego", jugador.categoria,"{}.".format(nombre))  ##mostrar desde la clase
-            print("=========================================")
-            print("Su jugador tiene los siguientes atributos\n")
-            print(jugador, "\n")
+            print("La opcion ingresada es incorrecta, intentelo nuevamente")
+
+    return nombre
+
+def elegir_jugador():
+    while True:
+        print("""¿Qué jugador quiere elegir?
+        1) Caballero
+        2) Mago
+        3) Arquero
+        """)
+
+        opcion = input()
+        if opcion == '1':
+            jugador = Caballero()
             break
 
-    players_game = Personajes(nombre, jugador.categoria, 0, 0)
+        elif opcion == '2':
+            jugador = Mago()
+            break
+
+        elif opcion == '3':
+            jugador = Arquero()
+            break
+
+        else:
+            print("La opción ingresada es incorrecta, vuelva a intertarlo")
+
+    return jugador
+
+def decir_bienvenido(nombre, jugador):
+    print("Bienvenido", jugador.categoria, nombre)
+
+def guardar_jugador(nombre, categoria):
+    players_game = Personajes(nombre, categoria, 0, 0)
     players_game.save()
+
+    # while True:
+    #     print("Felicitaciones usted elegió al", jugador.categoria, ",por favor ingrese un nombre: ",)
+    #     nombre = input()
+    #     nombre = nombre.capitalize()
+    #     if len(nombre) < 3 or len(nombre) > 15:
+    #         print("El nombre debe contener un minimo de 4 letras y un máximo de 15")
+    #     else:
+    #         print("Bienvenido al juego", jugador.categoria,"{}.".format(nombre))  ##mostrar desde la clase
+    #         print("=========================================")
+    #         print("Su jugador tiene los siguientes atributos\n")
+    #         print(jugador, "\n")
+    #         break
+    #
+
+
+
+
 
 ## 1 - Duplica tu vida maxima al doble.
 ## 2 - Recupera tu vida al 100%
