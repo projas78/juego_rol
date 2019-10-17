@@ -1,6 +1,7 @@
 from db import crear_bd
-from players_game import Caballero, Mago, Arquero, contar_prologo, reglas_batalla, tablero, Personajes, ingresar_nombre, \
-    lista_jugadores, mostrar_reglas, elegir_jugador, decir_bienvenido, guardar_jugador
+from players_game import contar_prologo, reglas_batalla, tablero, ingresar_nombre, \
+    lista_jugadores, mostrar_reglas, elegir_jugador, decir_bienvenido, guardar_jugador, jefe_final
+
 
 crear_bd()
 mostrar_reglas()
@@ -10,4 +11,12 @@ guardar_jugador(nombre, jugador.categoria)
 decir_bienvenido(nombre, jugador)
 contar_prologo()
 reglas_batalla()
-tablero(jugador)
+tablero(jugador, nombre)
+
+
+"""
+que se guarden las victorias y derrotas
+mejoras los textos
+diseñar jefes final
+misiones secunderias de la cueva
+"""

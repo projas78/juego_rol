@@ -1,9 +1,6 @@
 import random
-import sqlite3
 
-from tabulate import tabulate
-
-from db import agregar_jugador, lista_jugadores
+from db import agregar_jugador, lista_jugadores, gano, perdio
 
 
 class Player:
@@ -50,7 +47,7 @@ class Caballero(Player):
 
 class Mago(Player):
     def __init__(self):
-        super(Mago, self).__init__("Mago", 7, 4, 8, 6, "Varita")
+        super(Mago, self).__init__("Mago", 7, 4, 10, 6, "Varita")
 
 
 class Arquero(Player):
@@ -73,13 +70,125 @@ class Ladron(Player):
         super(Ladron, self).__init__("Ladron", 3, 3, 5, 4, "Golpes")
 
 
-def tablero(jugador):
+class Jefe_Final(Player):
+    pass
+
+
+def mostrar_reglas():
+    print("""Bienvenido a Mundo Medieval
+    ===========================
+    Reglas del juego
+    ================
+    1 - Deberás elegir entre ser un Caballero, un Mago o un Arquero.  Cada uno tiene habilidades diferentes
+    2 - Tirar un dado con los números entre 1 al 6
+    3 - El número que salga es la cantidad de casilleros que deberá avanzar.
+    4 - Cada Casillero puede tener un desafío
+    5 - Para ganar deberá vencer todos los desafios y al jefe final.
+    """)
+
+
+def ingresar_nombre():
+    jugadores = lista_jugadores()
+
+    opcion = input("¿Desea crear un usuario nuevo o usar uno existente?, seleccione 'n' (nuevo) o 'e' (existente)\n")
+    while True:
+        if opcion.lower() == 'e':
+            nombre = input("Ingrese el nombre de su usuario\n")
+            nombre = nombre.capitalize()
+            if nombre in jugadores:
+                print("Bienvenido otra vez {}".format(nombre))
+                break
+            else:
+                print("El usuario ingresado no existe")
+        elif opcion.lower() == 'n':
+            nombre = input("Ingrese un nombre para poder crear su usuario\n")
+            nombre = nombre.capitalize()
+            if len(nombre) < 3 or len(nombre) > 15:
+                print("El nombre debe contener un minimo de 4 letras y un máximo de 15")
+
+            elif nombre not in jugadores:
+                print("Bienvenido al juego {}, Que comience el juego!!\n".format(nombre))
+                break
+            else:
+                print("El nombre de usuario ya esta en uso, por favor eliga otro")
+        else:
+            print("La opcion ingresada es incorrecta, intentelo nuevamente")
+
+    return nombre
+
+
+def elegir_jugador():
+    while True:
+        print("""¿Qué jugador quiere elegir?
+        1) Caballero
+        2) Mago
+        3) Arquero
+        """)
+
+        opcion = input()
+        if opcion == '1':
+            jugador = Caballero()
+            break
+
+        elif opcion == '2':
+            jugador = Mago()
+            break
+
+        elif opcion == '3':
+            jugador = Arquero()
+            break
+
+        else:
+            print("La opción ingresada es incorrecta, vuelva a intertarlo")
+
+    return jugador
+
+
+def guardar_jugador(nombre, categoria):
+    players_game = Personajes(nombre, categoria, 0, 0)
+    players_game.save()
+
+
+def decir_bienvenido(nombre, jugador):
+    print("Bienvenido", jugador.categoria, nombre)
+    print("Su jugador tiene los siguientes atributos\n")
+    print(jugador)
+
+
+def contar_prologo():
+    input("Presione Enter para continuar.")
+    print("Agregar historia aquí (next comming)\n")
+
+
+def reglas_batalla():
+    while True:
+        print("Quiere ver las reglas de la batalla?, Ingrese 'y' o 'n'")
+        opcion = input()
+        if opcion.lower() == 'y':
+
+            print("""Debes tirar el dado cada vez que te enfrentes a un enemigo
+Si sacás 1, 3 o 5 podrás atacar.
+Cada ataque vale 2 puntos mas el numero que saques del dado.
+Cuando el enemigo llegue a cero podras volver a ejecutar el dado y continuar el juego           
+Si sacás 2, 4 o 6 el enemigo te atacará.
+Cada ataque vale el valor del dado mas el ataque que tenga cada enemigo
+Si tu jugador queda en cero de vida perderás el juego
+""")
+            break
+        elif opcion.lower() == 'n':
+            break
+        else:
+            print("La opción ingresada es incorrecta")
+
+
+def tablero(jugador, nombre):
+    winner = False
     recorrer_tablero = 0
     while jugador.esta_vivo():
-        input("Presione cualquier tecla para tirar el dado.")
-        resultado = random.randint(1, 3) #solo debug
+        input("Presione Enter para tirar el dado.")
+        resultado = random.randint(12, 12) #solo debug
         print("El dado giro y obtuvo: {}".format(resultado))
-        recorrer_tablero = recorrer_tablero + resultado
+        recorrer_tablero += resultado
         if recorrer_tablero in (1, 2, 11):
             print("Usted avanza a la posición: {}\n".format(recorrer_tablero))
             print("Vuelva a tirar el dado\n")
@@ -93,7 +202,7 @@ def tablero(jugador):
             atacar_orko(jugador)
 
         elif recorrer_tablero in (4, 6):
-            print("Usted avanza a la posición: \n".format(recorrer_tablero))
+            print("Usted avanza a la posición: {}\n".format(recorrer_tablero))
             print("Un ladron te ataca!!\n")
             atacar_ladron(jugador)
 
@@ -105,10 +214,13 @@ def tablero(jugador):
         elif recorrer_tablero >= 12:
             print("Lucha contra el jefe final!!")
             print("============================")
-            print("Ganaste el juego!")
+            winner = jefe_final(jugador)
             break
+
+    if winner:
+        gano(nombre)
     else:
-        print("Perdiste, fin del juego!")
+        perdio(nombre)
 
 
 def atacar_ladron(jugador):
@@ -128,7 +240,7 @@ def atacar_ladron(jugador):
             if ladron.esta_vivo():
                 print("Ladron: {}\nJugador: {}\n".format(ladron.vida, jugador.vida))
             else:
-                print("Ha ganado la pelea, continue jugando")
+                print("Has ganado la pelea!!, continua jugando\n")
                 break
         else:
             input("El ladron va a atacarte, presiona Enter para comenzar con la batalla!")
@@ -172,7 +284,6 @@ def atacar_elfo_oscuro(jugador):
                 
 def atacar_orko(jugador):
     orko = Orko()
-
     while jugador.esta_vivo():
         input("Presione Enter para tirar el dado.")
         resultado_tablero = random.randint(1, 2)
@@ -199,30 +310,34 @@ def atacar_orko(jugador):
                 print("Orko: {}\nJugador: 0\n".format(orko.vida))
 
 
-def contar_prologo():
-    input("Presione Enter para continuar.")
-    print("Agregar historia aquí (next comming)\n")
+def jefe_final(jugador):
+    jefe_final = Jefe_Final(jugador.categoria, jugador.ataque * 2, jugador.defensa * 2, jugador.vida * 2, jugador.velocidad * 2, jugador.arma)
 
+    while jugador.esta_vivo():
+        input("Presione Enter para tirar el dado.")
+        resultado_tablero = random.randint(1, 6)
+        print("El dado giro y obtuvo: {}".format(resultado_tablero))
 
-def reglas_batalla():
-    while True:
-        print("Quiere ver las reglas de la batalla?, Ingrese 'y' o 'n'")
-        opcion = input()
-        if opcion.lower() == 'y':
-
-            print("""Debes tirar el dado cada vez que te enfrentes a un enemigo
-Si sacás 1, 3 o 5 podrás atacar.
-Cada ataque vale 2 puntos mas el numero que saques del dado.
-Cuando el enemigo llegue a cero podras volver a ejecutar el dado y continuar el juego           
-Si sacás 2, 4 o 6 el enemigo te atacará.
-Cada ataque vale el valor del dado mas el ataque que tenga cada enemigo
-Si tu jugador queda en cero de vida perderás el juego
-""")
-            break
-        elif opcion.lower() == 'n':
-            break
+        if resultado_tablero in (1, 3, 5):
+            print("Ataca a tu enemigo!")
+            input("Presione Enter para tirar el dado.")
+            resultado = random.randint(1, 2)
+            print("El dado giro y obtuvo: {}".format(resultado))
+            jefe_final.recibir_daño(resultado)
+            if jefe_final.esta_vivo():
+                print("Orion: {}\nJugador: {}\n".format(jefe_final.vida, jugador.vida))
+            else:
+                print("Ha salvado el Reino")
+                return True
         else:
-            print("La opción ingresada es incorrecta")
+            input("Orion va a atacarte, presiona Enter para continuar!")
+            resultado = random.randint(1, 2)
+            jugador.recibir_daño(resultado)
+            if jugador.esta_vivo():
+                print("Orion: {}\nJugador: {}\n".format(jefe_final.vida, jugador.vida))
+            else:
+                print("Perdiste, el Reino ha caido")
+                return False
 
 
 def ms_cueva_Sorginak(jugador):
@@ -251,96 +366,13 @@ Elige un número entre 1 o 2 y deja que el destino haga el resto!!
         else:
             print("Opcion incorrecta.")
 
-def mostrar_reglas():
-    print("""Bienvenido a Mundo Medieval
-    ===========================
-    Reglas del juego
-    ================
-    1 - Deberás elegir entre ser un Caballero, un Mago o un Arquero.  Cada uno tiene habilidades diferentes
-    2 - Tirar un dado con los números entre 1 al 6
-    3 - El número que salga es la cantidad de casilleros que deberá avanzar.
-    4 - Cada Casillero puede tener un desafío
-    5 - Para ganar deberá vencer todos los desafios y al jefe final.
-    """)
-
-
-def ingresar_nombre():
-    jugadores = lista_jugadores()
-
-    opcion = input("¿Desea crear un usuario nuevo o usar uno existente?, seleccione 'n' (nuevo) o 'e' (existente)\n")
-    while True:
-        if opcion.lower() == 'e':
-            nombre = input("Ingrese el nombre de su usuario\n")
-            if nombre in jugadores:
-                print("Bienvenido otra vez", nombre)
-                break
-            else:
-                print("El usuario ingresado no existe")
-        elif opcion.lower() == 'n':
-            nombre = input("Ingrese un nombre para poder crear su usuario\n")
-            if len(nombre) < 3 or len(nombre) > 15:
-                print("El nombre debe contener un minimo de 4 letras y un máximo de 15")
-
-            elif nombre not in jugadores:
-                print("Bienvenido al juego", nombre, "Que comience el juego!!")
-
-                break
-            else:
-                print("El nombre de usuario ya esta en uso, por favor eliga otro")
-        else:
-            print("La opcion ingresada es incorrecta, intentelo nuevamente")
-
-    return nombre
-
-def elegir_jugador():
-    while True:
-        print("""¿Qué jugador quiere elegir?
-        1) Caballero
-        2) Mago
-        3) Arquero
-        """)
-
-        opcion = input()
-        if opcion == '1':
-            jugador = Caballero()
-            break
-
-        elif opcion == '2':
-            jugador = Mago()
-            break
-
-        elif opcion == '3':
-            jugador = Arquero()
-            break
-
-        else:
-            print("La opción ingresada es incorrecta, vuelva a intertarlo")
-
-    return jugador
-
-def decir_bienvenido(nombre, jugador):
-    print("Bienvenido", jugador.categoria, nombre)
-
-def guardar_jugador(nombre, categoria):
-    players_game = Personajes(nombre, categoria, 0, 0)
-    players_game.save()
-
-    # while True:
-    #     print("Felicitaciones usted elegió al", jugador.categoria, ",por favor ingrese un nombre: ",)
-    #     nombre = input()
-    #     nombre = nombre.capitalize()
-    #     if len(nombre) < 3 or len(nombre) > 15:
-    #         print("El nombre debe contener un minimo de 4 letras y un máximo de 15")
-    #     else:
-    #         print("Bienvenido al juego", jugador.categoria,"{}.".format(nombre))  ##mostrar desde la clase
-    #         print("=========================================")
-    #         print("Su jugador tiene los siguientes atributos\n")
-    #         print(jugador, "\n")
-    #         break
-    #
-
-
-
+def armadura_legendaria():
+    print("""Cuenta la leyenda que en los bosques susurrantes esta la armadura legendaria.  Capaz de disminuir el poder 
+de los ataques y de resistir cualquier golpe.  
+Deberás desviarte de tu camino e introducirte en la pronfundidad del bosque
+Pero para conseguirla debes hacer 3 desafios.
+ 
+""")
 
 
 ## 1 - Duplica tu vida maxima al doble.
@@ -348,3 +380,16 @@ def guardar_jugador(nombre, categoria):
 ## 3 - Te resta tu vida actual a la mitad.
 ## 4 - Te deja tu vida en cero y termina la partida.
 ## 5 - Al entrar por esa entrada vuelves a la posicion que estabas con la misma vida que tenias.
+
+##un demonio dorado, que tenga 100 de vida,
+# que cuando grita se cura 5 de vida y daña 20 potenciado
+
+
+# print("-Pense que nunca vendrias o que ya estarias muerto-", nombre)
+# print("-¿Quien eres?-, pregunto el",jugador.categoria)
+# print("-Despues de todo este camino, no descubriste quien soy, hermano....")
+# print("-Yo no tengo ningun hermano-. dijo el",jugador.categoria, nombre)
+# print("-Jajaja, eso es lo que siempre creiste-\n")
+# print("mas historia proximamente\n")
+# print("-Pero hoy moriras, el reino de Camelot caera y a ti nadie te recordada-")
+# print("-Eso lo veremos-. Dijo el", jugador.categoria, nombre)

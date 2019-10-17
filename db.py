@@ -26,7 +26,7 @@ def agregar_jugador(nombre, categoria, victorias, derrotas):
         fila = [nombre, categoria, victorias, derrotas]
         cursor.execute("insert into jugadores values (null,?,?,?,?)", fila)
     except sqlite3.IntegrityError:
-        print("El usuario ya existe")
+        print()
 
     conexion.commit()
     conexion.close()
@@ -45,3 +45,36 @@ def lista_jugadores():
     conexion.close()
 
     return list_jugadores
+
+
+def gano(nombre):
+    conexion = sqlite3.connect('jugadores.db')
+    cursor = conexion.cursor()
+    print(nombre)
+
+    lista = [nombre]
+    cursor.execute("select victorias from jugadores where nombre = ?", lista)
+    victorias = cursor.fetchone()
+    print(victorias)
+
+    victorias = victorias[0] + 1
+    cursor.execute("update jugadores set victorias = ? where nombre = ?", [victorias, nombre])
+
+    conexion.commit()
+    conexion.close()
+
+
+def perdio(nombre):
+    conexion = sqlite3.connect('jugadores.db')
+    cursor = conexion.cursor()
+    print(nombre)
+
+    lista = [nombre]
+    cursor.execute("select derrotas from jugadores where nombre = ?", lista)
+    derrotas = cursor.fetchone()
+
+    derrotas = derrotas[0] + 1
+    cursor.execute("update jugadores set derrotas = ? where nombre = ?", [derrotas, nombre])
+
+    conexion.commit()
+    conexion.close()
