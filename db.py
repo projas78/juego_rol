@@ -50,12 +50,10 @@ def lista_jugadores():
 def gano(nombre):
     conexion = sqlite3.connect('jugadores.db')
     cursor = conexion.cursor()
-    print(nombre)
 
     lista = [nombre]
     cursor.execute("select victorias from jugadores where nombre = ?", lista)
     victorias = cursor.fetchone()
-    print(victorias)
 
     victorias = victorias[0] + 1
     cursor.execute("update jugadores set victorias = ? where nombre = ?", [victorias, nombre])
@@ -67,7 +65,6 @@ def gano(nombre):
 def perdio(nombre):
     conexion = sqlite3.connect('jugadores.db')
     cursor = conexion.cursor()
-    print(nombre)
 
     lista = [nombre]
     cursor.execute("select derrotas from jugadores where nombre = ?", lista)

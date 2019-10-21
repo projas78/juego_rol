@@ -74,6 +74,15 @@ class Jefe_Final(Player):
     pass
 
 
+class Armadura_Dorada(Player):
+    def __init__(self):
+        super(Armadura_Dorada, self).__init__("Armadura Dorada", 12, 12, 13, 11, "Gigante")
+
+class Protego(Player):
+    def __init__(self):
+        super(Protego, self).__init__("Troll de la montaña", 20, 20, 21, 15, "Mazo de madera")
+
+
 def mostrar_reglas():
     print("""Bienvenido a Mundo Medieval
     ===========================
@@ -152,7 +161,7 @@ def guardar_jugador(nombre, categoria):
 def decir_bienvenido(nombre, jugador):
     print("Bienvenido", jugador.categoria, nombre)
     print("Su jugador tiene los siguientes atributos\n")
-    print(jugador)
+    print(jugador, "\n")
 
 
 def contar_prologo():
@@ -181,15 +190,15 @@ Si tu jugador queda en cero de vida perderás el juego
             print("La opción ingresada es incorrecta")
 
 
-def tablero(jugador, nombre):
+def tablero(jugador, nombre, boss):
     winner = False
     recorrer_tablero = 0
     while jugador.esta_vivo():
         input("Presione Enter para tirar el dado.")
-        resultado = random.randint(12, 12) #solo debug
+        resultado = random.randint(10, 10) #solo debug
         print("El dado giro y obtuvo: {}".format(resultado))
         recorrer_tablero += resultado
-        if recorrer_tablero in (1, 2, 11):
+        if recorrer_tablero in (1, 2, 8, 11, 12, 13, 16, 17, 18, 19):
             print("Usted avanza a la posición: {}\n".format(recorrer_tablero))
             print("Vuelva a tirar el dado\n")
         elif recorrer_tablero == 9:
@@ -206,22 +215,61 @@ def tablero(jugador, nombre):
             print("Un ladron te ataca!!\n")
             atacar_ladron(jugador)
 
-        elif recorrer_tablero in (5, 10):
+        elif recorrer_tablero in (5, 14):
             print("Usted avanza a la posición: {}\n".format(recorrer_tablero))
             print("Un elfo oscuro te ataca!!")
             atacar_elfo_oscuro(jugador)
 
-        elif recorrer_tablero >= 12:
+        elif recorrer_tablero == 10:
+            if jugador.categoria == "Caballero":
+                print("""Si entras por el bosque podrás tratar de conseguir la armadura dorada.  Pero te en cuenta que
+si pierdes haciendo esta misiòn moriras y se terminara el juego.\n""")
+                while True:
+                    opcion = input("""¿Esta seguro que desea conseguir la armadura? Ingrese 'y' si quiere ir por la
+armadura o 'n' si prefiere seguir por el camino\n""")
+                    if opcion.lower() == "y":
+                        sec_armadura_dorada(jugador, nombre)
+                        break
+                    elif opcion.lower() == "n":
+                        print("No necesito la armadura dorada para salvar el reino, voy a continuar\n")
+                        break
+                    else:
+                        print("La opcion ingresada es incorrecta, vuelva a intentarlo")
+
+            elif jugador.categoria == "Mago":
+                print("""En el bosque de las hadas se dice que su lider el Hada Azul tiene la habilidad de enseñarte el 
+hechizo Protego.  Pero para aprenderlo, el Hada Azul solo te pide una condición.  Que derrotes al semi gigante que desde
+hace años esta atacando el bosque y mantando a todo el que se le cruce en el camino.
+Pero te en cuenta que si pierdes haciendo esta misiòn moriras y se terminara el juego.\n
+                """)
+                while True:
+                    opcion = input("""¿Esta seguro que desea aprender el hechizo protego? Ingrese 'y' si quiere 
+aprenderlo o 'n' si prefiere seguir por el camino\n""")
+                    if opcion.lower() == "y":
+                        sec_armadura_dorada(jugador, nombre)
+                        break
+                    elif opcion.lower() == "n":
+                        print("No necesito aprender un hechizo para salvar el reino, voy a continuar\n")
+                        break
+                    else:
+                        print("La opcion ingresada es incorrecta, vuelva a intentarlo")
+
+        elif recorrer_tablero == 15:
+            if jugador.categoria == "Caballero":
+                sec_espada_excallibur(jugador, nombre)
+
+        elif recorrer_tablero >= 20:
             print("Lucha contra el jefe final!!")
             print("============================")
-            winner = jefe_final(jugador)
+            winner = jefe_final(jugador, boss)
             break
 
     if winner:
         gano(nombre)
+        print("Ha salvado el Reino")
     else:
         perdio(nombre)
-
+        print("Perdiste, el Reino ha caido y mueres")
 
 def atacar_ladron(jugador):
     ladron = Ladron()
@@ -258,7 +306,7 @@ def atacar_elfo_oscuro(jugador):
 
     while jugador.esta_vivo():
         input("Presione cualquier tecla para tirar el dado.")
-        resultado_tablero = random.randint(1, 2)
+        resultado_tablero = random.randint(1, 6)
         print("El dado giro y obtuvo: {}".format(resultado_tablero))
 
         if resultado_tablero in (1, 3, 5):
@@ -310,9 +358,8 @@ def atacar_orko(jugador):
                 print("Orko: {}\nJugador: 0\n".format(orko.vida))
 
 
-def jefe_final(jugador):
-    jefe_final = Jefe_Final(jugador.categoria, jugador.ataque * 2, jugador.defensa * 2, jugador.vida * 2, jugador.velocidad * 2, jugador.arma)
-
+def jefe_final(jugador, boss):
+    print(boss)
     while jugador.esta_vivo():
         input("Presione Enter para tirar el dado.")
         resultado_tablero = random.randint(1, 6)
@@ -323,20 +370,18 @@ def jefe_final(jugador):
             input("Presione Enter para tirar el dado.")
             resultado = random.randint(1, 2)
             print("El dado giro y obtuvo: {}".format(resultado))
-            jefe_final.recibir_daño(resultado)
-            if jefe_final.esta_vivo():
-                print("Orion: {}\nJugador: {}\n".format(jefe_final.vida, jugador.vida))
+            boss.recibir_daño(resultado)
+            if boss.esta_vivo():
+                print("Orion: {}\nJugador: {}\n".format(boss.vida, jugador.vida))
             else:
-                print("Ha salvado el Reino")
                 return True
         else:
             input("Orion va a atacarte, presiona Enter para continuar!")
             resultado = random.randint(1, 2)
             jugador.recibir_daño(resultado)
             if jugador.esta_vivo():
-                print("Orion: {}\nJugador: {}\n".format(jefe_final.vida, jugador.vida))
+                print("Orion: {}\nJugador: {}\n".format(boss.vida, jugador.vida))
             else:
-                print("Perdiste, el Reino ha caido")
                 return False
 
 
@@ -366,13 +411,116 @@ Elige un número entre 1 o 2 y deja que el destino haga el resto!!
         else:
             print("Opcion incorrecta.")
 
-def armadura_legendaria():
-    print("""Cuenta la leyenda que en los bosques susurrantes esta la armadura legendaria.  Capaz de disminuir el poder 
-de los ataques y de resistir cualquier golpe.  
-Deberás desviarte de tu camino e introducirte en la pronfundidad del bosque
-Pero para conseguirla debes hacer 3 desafios.
- 
+def sec_armadura_dorada(jugador, nombre):
+    print("""Cuenta la leyenda que en los bosques susurrantes esta la armadura legendaria.  Capaz de disminuir el poder
+de los ataques del enemigoy de resistir cualquier golpe.  
+Pero para conseguirla deberás vencer al Gigante de Hierro.
 """)
+    armadura_dorada = Armadura_Dorada()
+    while jugador.esta_vivo():
+        input("Presione Enter para tirar el dado.")
+        resultado_tablero = random.randint(1, 2)
+        print("El dado giro y obtuvo: {}".format(resultado_tablero))
+
+        if resultado_tablero in (1, 3, 5):
+            print("Ataca a tu enemigo\n!")
+            input("Presione Enter para tirar el dado.")
+            resultado = random.randint(1, 2)
+            print("El dado giro y obtuvo: {}".format(resultado))
+            armadura_dorada.recibir_daño(resultado)
+            if armadura_dorada.esta_vivo():
+                print("Gigante de Hierro: {}\n{}: {}\n".format(armadura_dorada.vida, nombre, jugador.vida))
+            else:
+                print("Ha ganado la pelea y obtienes la armadura dorada., continue jugando\n")
+                break
+        else:
+            input("El Gigante de Hierro va a atacarte, presiona Enter para continuar!")
+            resultado = random.randint(1, 2)
+            jugador.recibir_daño(resultado)
+            if jugador.esta_vivo():
+                print("Gigante de Hierro: {}\n{}: {}\n".format(armadura_dorada.vida, nombre, jugador.vida))
+            else:
+                print("Gigante de Hierro: {}\n{}: 0\n".format(armadura_dorada.vida, nombre))
+
+
+def sec_espada_excallibur(jugador, nombre):
+    print("""Bienevido {} {}. Te encontraste con la espada de Excalibur atrapada en una roca.
+Para obtenerla debe tirar con fuerza de la espalda para sacarla de la roca.
+Reglas:
+Podras tirar el dado hasta 4 veces y deberas sumar 10 o más punto para obtener la espada.
+Si tiraste el dado las 4 veces y no sumaste 10 la espada desaparecerá y no podrás volver a intentarlo.
+    """.format(jugador.categoria, nombre))
+    contador = 0
+    resultado = 0
+    while contador < 4:
+        input("Presione Enter para tirar el dado.")
+        dado = random.randint(3, 3)
+        contador += 1
+        print("El dado giro y obtuvo: {}".format(dado))
+        resultado = dado + resultado
+        if resultado >= 10:
+            print("Felicitaciones, obtuviste la espada de Escalibur, tu ataque se incrementa en +2")
+            break
+        else:
+            print("Tiraste de la espada {} veces y tu puntajes es {}.\n".format(contador, resultado))
+    else:
+        print("No eres digno de tener la espada de escalibur")
+
+
+def sec_hechizo_escudo(jugador, nombre):
+    protego = Protego()
+    while jugador.esta_vivo():
+        input("Presione Enter para tirar el dado.")
+        resultado_tablero = random.randint(1, 6)
+        print("El dado giro y obtuvo: {}".format(resultado_tablero))
+
+        if resultado_tablero in (1, 3, 5):
+            print("Ataca a tu enemigo\n!")
+            input("Presione Enter para tirar el dado.")
+            resultado = random.randint(1, 6)
+            print("El dado giro y obtuvo: {}".format(resultado))
+            protego.recibir_daño(resultado)
+            if protego.esta_vivo():
+                print("Troll de la montaña: {}\n{}: {}\n".format(protego.vida, nombre, jugador.vida))
+            else:
+                print("Ha ganado la pelea, continue jugando\n")
+                break
+        else:
+            input("Troll de la montaña va a atacarte, presiona Enter para continuar!")
+            resultado = random.randint(1, 2)
+            jugador.recibir_daño(resultado)
+            if jugador.esta_vivo():
+                print("Troll de la montaña: {}\n{}: {}\n".format(protego.vida, nombre, jugador.vida))
+            else:
+                print("Troll de la montaña: {}\n{}: 0\n".format(protego.vida, nombre))
+
+
+def sec_varita_sauco(jugador, nombre):
+    protego = Protego()
+    while jugador.esta_vivo():
+        input("Presione Enter para tirar el dado.")
+        resultado_tablero = random.randint(1, 6)
+        print("El dado giro y obtuvo: {}".format(resultado_tablero))
+
+        if resultado_tablero in (1, 3, 5):
+            print("Ataca a tu enemigo\n!")
+            input("Presione Enter para tirar el dado.")
+            resultado = random.randint(1, 6)
+            print("El dado giro y obtuvo: {}".format(resultado))
+            protego.recibir_daño(resultado)
+            if protego.esta_vivo():
+                print("Troll de la montaña: {}\n{}: {}\n".format(protego.vida, nombre, jugador.vida))
+            else:
+                print("Ha ganado la pelea, continue jugando\n")
+                break
+        else:
+            input("Troll de la montaña va a atacarte, presiona Enter para continuar!")
+            resultado = random.randint(1, 2)
+            jugador.recibir_daño(resultado)
+            if jugador.esta_vivo():
+                print("Troll de la montaña: {}\n{}: {}\n".format(protego.vida, nombre, jugador.vida))
+            else:
+                print("Troll de la montaña: {}\n{}: 0\n".format(protego.vida, nombre))
 
 
 ## 1 - Duplica tu vida maxima al doble.
