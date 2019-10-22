@@ -80,7 +80,12 @@ class Armadura_Dorada(Player):
 
 class Protego(Player):
     def __init__(self):
-        super(Protego, self).__init__("Troll de la montaña", 20, 20, 21, 15, "Mazo de madera")
+        super(Protego, self).__init__("Troll de la montaña", 20, 20, 10, 15, "Mazo de madera")
+
+
+class Merlin(Player):
+    def __init__(self):
+        super(Merlin, self).__init__("Mago Supremo", 18, 20, 16, 15, "Varita de Sauco")
 
 
 def mostrar_reglas():
@@ -257,6 +262,14 @@ aprenderlo o 'n' si prefiere seguir por el camino\n""")
         elif recorrer_tablero == 15:
             if jugador.categoria == "Caballero":
                 sec_espada_excallibur(jugador, nombre)
+
+            elif jugador.categoria == "Mago":
+                print("Lucha contra merlin por la Varita de Sauco")
+                sec_varita_sauco(jugador, nombre)
+
+            elif jugador.categoria == "Arquero":
+                print("Tiene la posibilidad de conseguir el Arco de Robin Hood")
+                sec_arco_robin_hood(jugador, nombre)
 
         elif recorrer_tablero >= 20:
             print("Lucha contra el jefe final!!")
@@ -496,7 +509,7 @@ def sec_hechizo_escudo(jugador, nombre):
 
 
 def sec_varita_sauco(jugador, nombre):
-    protego = Protego()
+    merlin = Merlin()
     while jugador.esta_vivo():
         input("Presione Enter para tirar el dado.")
         resultado_tablero = random.randint(1, 6)
@@ -507,20 +520,43 @@ def sec_varita_sauco(jugador, nombre):
             input("Presione Enter para tirar el dado.")
             resultado = random.randint(1, 6)
             print("El dado giro y obtuvo: {}".format(resultado))
-            protego.recibir_daño(resultado)
-            if protego.esta_vivo():
-                print("Troll de la montaña: {}\n{}: {}\n".format(protego.vida, nombre, jugador.vida))
+            merlin.recibir_daño(resultado)
+            if merlin.esta_vivo():
+                print("El Mago Merlin: {}\n{}: {}\n".format(merlin.vida, nombre, jugador.vida))
             else:
                 print("Ha ganado la pelea, continue jugando\n")
                 break
         else:
-            input("Troll de la montaña va a atacarte, presiona Enter para continuar!")
+            input("El Mago Merlin va a atacarte, presiona Enter para continuar!")
             resultado = random.randint(1, 2)
             jugador.recibir_daño(resultado)
             if jugador.esta_vivo():
-                print("Troll de la montaña: {}\n{}: {}\n".format(protego.vida, nombre, jugador.vida))
+                print("El Mago Merlin: {}\n{}: {}\n".format(merlin.vida, nombre, jugador.vida))
             else:
-                print("Troll de la montaña: {}\n{}: 0\n".format(protego.vida, nombre))
+                print("El Mago Merlin: {}\n{}: 0\n".format(merlin.vida, nombre))
+
+
+def sec_arco_robin_hood(jugador, nombre):
+    print("""Bienevido {} {}. Estas en la guarida donde vivia Robin Hood.
+    Reglas:
+    Podras tirar el dado hasta 4 veces y deberas sumar 10 o más punto para obtener la espada.
+    Si tiraste el dado las 4 veces y no sumaste 10 el escudo desaparecerá y no podrás volver a intentarlo.
+        """.format(jugador.categoria, nombre))
+    contador = 0
+    resultado = 0
+    while contador < 4:
+        input("Presione Enter para tirar el dado.")
+        dado = random.randint(3, 3)
+        contador += 1
+        print("El dado giro y obtuvo: {}".format(dado))
+        resultado = dado + resultado
+        if resultado >= 10:
+            print("Felicitaciones, obtuviste el arco de Robin Hood, tu ataque se incrementa en +2")
+            break
+        else:
+            print("Tiraste con tu arco {} veces y tu puntajes es {}.\n".format(contador, resultado))
+    else:
+        print("No eres digno de tener el arco de Robin Hood")
 
 
 ## 1 - Duplica tu vida maxima al doble.
