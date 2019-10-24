@@ -15,7 +15,7 @@ class Player:
         self.arma = arma
 
     def recibir_daño(self, daño):
-        self.vida = self.vida - daño
+        self.vida = self.vida - (daño - self.defensa)
 
     def esta_vivo(self):
         return self.vida > 0
@@ -43,7 +43,7 @@ class Personajes:
 
 class Caballero(Player):
     def __init__(self):
-        super(Caballero, self).__init__("Caballero", 10, 9, 100,100, 3, "Espada")
+        super(Caballero, self).__init__("Caballero", 10, 9, 100, 100, 3, "Espada")
 
 
 class Mago(Player):
@@ -450,7 +450,7 @@ Pero para conseguirla deberás vencer al Gigante de Hierro.
                 print("Gigante de Hierro: {} / {}\n{}: {} / {}\n".format(armadura_dorada.vida, armadura_dorada.vida_maxima, nombre, jugador.vida, jugador.vida_maxima))
             else:
                 print("Ha ganado la pelea y obtienes la armadura dorada., continue jugando\n")
-                jugador.recibir_daño(resultado - 3)
+                jugador.defensa += 2
                 print(jugador,"\n")
                 break
         else:
