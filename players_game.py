@@ -17,6 +17,9 @@ class Player:
     def recibir_daño(self, daño):
         self.vida = self.vida - (daño - self.defensa)
 
+    def atacar(self, daño):
+        self.vida = self.vida - (daño + self.ataque)
+
     def esta_vivo(self):
         return self.vida > 0
 
@@ -43,7 +46,7 @@ class Personajes:
 
 class Caballero(Player):
     def __init__(self):
-        super(Caballero, self).__init__("Caballero", 20, 0, 100, 100, 3, "Espada")
+        super(Caballero, self).__init__("Caballero", 0, 0, 100, 100, 3, "Espada")
 
 
 class Mago(Player):
@@ -207,7 +210,7 @@ def tablero(jugador, nombre, boss):
     recorrer_tablero = 0
     while jugador.esta_vivo():
         input("Presione Enter para tirar el dado.\n")
-        resultado = random.randint(10, 10)  # solo debug
+        resultado = random.randint(4, 4)  # solo debug
         print("El dado giro y obtuvo: {}".format(resultado))
         recorrer_tablero += resultado
         if recorrer_tablero in (1, 2, 8, 11, 16, 17, 18, 19):
@@ -220,17 +223,17 @@ def tablero(jugador, nombre, boss):
         elif recorrer_tablero in (3, 7):
             print("Usted avanza a la posición: {}\n".format(recorrer_tablero))
             print("Un Orko te ataca!!!\n")
-            atacar_orko(jugador)
+            atacar_orko(jugador, nombre)
 
         elif recorrer_tablero in (4, 6):
             print("Usted avanza a la posición: {}\n".format(recorrer_tablero))
             print("Un ladron te ataca!!\n")
-            atacar_ladron(jugador)
+            atacar_ladron(jugador, nombre)
 
         elif recorrer_tablero in (5, 14):
             print("Usted avanza a la posición: {}\n".format(recorrer_tablero))
             print("Un elfo oscuro te ataca!!")
-            atacar_elfo_oscuro(jugador)
+            atacar_elfo_oscuro(jugador, nombre)
 
         elif recorrer_tablero == 12:
             dormir(jugador, nombre)
@@ -308,9 +311,15 @@ def atacar_ladron(jugador, nombre):
             input("Presione Enter para tirar el dado.")
             resultado = random.randint(1, 2)
             print("Le sacas {} de energía a tu enemigo".format(resultado))
-            ladron.recibir_daño(resultado)
+            ataque = jugador.ataque #debug
+            atacar = jugador.atacar #debug
+            #ataque_resultado = jugador.ataque(resultado) #debug
+            print("ataque", ataque) #debug
+            print("daño", atacar) #debug
+            #print("ataque - resultado", ataque_resultado) #debug
+            ladron.atacar(resultado)
             if ladron.esta_vivo():
-                print("Ladron: {} / {}\n{}: {} / {}".format(ladron.vida, ladron.vida_maxima, nombre, jugador.vida,
+                print("Ladron: {} / {}\n{}: {} / {}\n".format(ladron.vida, ladron.vida_maxima, nombre, jugador.vida,
                                                             jugador.vida_maxima))
             else:
                 print("Has ganado la pelea!!, continua jugando\n")
@@ -319,6 +328,7 @@ def atacar_ladron(jugador, nombre):
             input("El ladron va a atacarte, presiona Enter para luchar!\n")
             resultado = random.randint(1, 2)
             jugador.recibir_daño(resultado)
+            print("el ladron te saca; {}".format(resultado))
             if jugador.esta_vivo():
                 print("Ladron: {} / {}\n{}: {} / {}".format(ladron.vida, ladron.vida_maxima, nombre, jugador.vida,
                                                             jugador.vida_maxima))
@@ -500,6 +510,7 @@ Si tiraste el dado las 4 veces y no sumaste 10 la espada desaparecerá y no podr
         resultado = dado + resultado
         if resultado >= 10:
             print("Felicitaciones, obtuviste la espada de Escalibur, tu ataque se incrementa en +2")
+            jugador.ataque += 2
             break
         else:
             print("Tiraste de la espada {} veces y tu puntajes es {}.\n".format(contador, resultado))
