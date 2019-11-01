@@ -15,10 +15,12 @@ class Player:
         self.arma = arma
 
     def recibir_daño(self, daño, enemigo):
-        self.vida = self.vida - (daño - self.defensa + enemigo.ataque)
+        total_damage = (daño - self.defensa + enemigo.ataque)
+        if total_damage > 0:
+            self.vida -= total_damage
+        else:
+            self.vida -= 1
 
-    def hacer_daño(self, daño, enemigo):
-        self.vida = self.vida - (daño - enemigo.defensa + self.ataque)
 
     def esta_vivo(self):
         return self.vida > 0
@@ -327,22 +329,41 @@ def atacar_ladron(jugador, nombre):
             resultado = random.randint(1, 2)
             print("Le sacas {} de energía a tu enemigo".format(resultado))
             ladron.recibir_daño(resultado, jugador)
-            if ladron.esta_vivo():
-                print("Ladron: {} / {}\n{}: {} / {}\n".format(ladron.vida, ladron.vida_maxima, nombre, jugador.vida,
-                                                            jugador.vida_maxima))
+            if ladron.vida >= ladron.vida_maxima:
+                ladron.vida = ladron.vida_maxima
+                if ladron.esta_vivo():
+                    print("Ladrón: {} / {}\n{}: {} / {}\n".format(ladron.vida, ladron.vida_maxima, nombre, jugador.vida,
+                                                                jugador.vida_maxima))
+                else:
+                    print(
+                        "Ladrón: {} / {}\n{}: 0 / {}\n".format(ladron.vida, ladron.vida_maxima, nombre, jugador.vida_maxima))
             else:
-                print("Has ganado la pelea!!, continua jugando\n")
-                break
+                if ladron.esta_vivo():
+                    print("Ladrón: {} / {}\n{}: {} / {}\n".format(ladron.vida, ladron.vida_maxima, nombre, jugador.vida,
+                                                                jugador.vida_maxima))
+                else:
+                    print("Ha ganado la pelea, continue jugando")
+                    break
         else:
-            input("El ladron va a atacarte, presiona Enter para luchar!\n")
-            resultado = random.randint(1, 2)
+            input("El Ladron va a atacarte, presiona Enter para continuar!")
+            resultado = random.randint(1, 6)
+            print(resultado)
             jugador.recibir_daño(resultado, ladron)
-            print("El ladron te saca; {}".format(resultado))
-            if jugador.esta_vivo():
-                print("Ladron: {} / {}\n{}: {} / {}".format(ladron.vida, ladron.vida_maxima, nombre, jugador.vida,
-                                                            jugador.vida_maxima))
+            if jugador.vida >= jugador.vida_maxima:
+                jugador.vida = jugador.vida_maxima
+                if jugador.esta_vivo():
+                    print("Ladrón: {} / {}\n{}: {} / {}\n".format(ladron.vida, ladron.vida_maxima, nombre, jugador.vida,
+                                                                jugador.vida_maxima))
+                else:
+                    print(
+                        "Ladrón: {} / {}\n{}: 0 / {}\n".format(ladron.vida, ladron.vida_maxima, nombre, jugador.vida_maxima))
             else:
-                print("Ladron: {} / {}\n{}: 0 / {}\n".format(ladron.vida, ladron.vida_maxima, nombre, jugador.vida_maxima))
+                if jugador.esta_vivo():
+                    print("Ladrón: {} / {}\n{}: {} / {}\n".format(ladron.vida, ladron.vida_maxima, nombre, jugador.vida,
+                                                                jugador.vida_maxima))
+                else:
+                    print(
+                        "Ladrón: {} / {}\n{}: 0 / {}\n".format(ladron.vida, ladron.vida_maxima, nombre, jugador.vida_maxima))
 
 
 def atacar_elfo_oscuro(jugador, nombre):
@@ -357,67 +378,71 @@ def atacar_elfo_oscuro(jugador, nombre):
             resultado = random.randint(1, 2)
             print("Le sacas {} de energía a tu enemigo".format(resultado))
             elfo_oscuro.hacer_daño(resultado, jugador)
-            if elfo_oscuro.esta_vivo():
-                print("Elfo Oscuro: {} / {}\n{}: {} / {}\n".format(elfo_oscuro.vida, elfo_oscuro.vida_maxima, nombre,
-                                                                   jugador.vida, jugador.vida_maxima))
+            if elfo_oscuro.vida >= elfo_oscuro.vida_maxima:
+                elfo_oscuro.vida = elfo_oscuro.vida_maxima
+                if elfo_oscuro.esta_vivo():
+                    print("Elfo Oscuro: {} / {}\n{}: {} / {}\n".format(elfo_oscuro.vida, elfo_oscuro.vida_maxima, nombre, jugador.vida,
+                                                                jugador.vida_maxima))
+                else:
+                    print(
+                        "Elfo Oscuro: {} / {}\n{}: 0 / {}\n".format(elfo_oscuro.vida, elfo_oscuro.vida_maxima, nombre, jugador.vida_maxima))
             else:
-                print("Ha ganado la pelea, continue jugando")
-                break
+                if elfo_oscuro.esta_vivo():
+                    print("Elfo Oscuro: {} / {}\n{}: {} / {}\n".format(elfo_oscuro.vida, elfo_oscuro.vida_maxima, nombre, jugador.vida,
+                                                                jugador.vida_maxima))
+                else:
+                    print("Ha ganado la pelea, continue jugando")
+                    break
         else:
             input("El Elfo Oscuro va a atacarte, presiona Enter para continuar!")
             resultado = random.randint(1, 6)
-            jugador.recibir_daño(resultado, elfo_oscuro)  # solo debug
-            if jugador.esta_vivo():
-                print("Elfo Oscuro: {} / {}\n{}: {} / {}\n".format(elfo_oscuro.vida, elfo_oscuro.vida_maxima, nombre,
-                                                                        jugador.vida, jugador.vida_maxima))
+            print(resultado)
+            jugador.recibir_daño(resultado, elfo_oscuro)
+            if jugador.vida >= jugador.vida_maxima:
+                jugador.vida = jugador.vida_maxima
+                if jugador.esta_vivo():
+                    print("Elfo Oscuro: {} / {}\n{}: {} / {}\n".format(elfo_oscuro.vida, elfo_oscuro.vida_maxima, nombre, jugador.vida,
+                                                                jugador.vida_maxima))
+                else:
+                    print(
+                        "Elfo Oscuro: {} / {}\n{}: 0 / {}\n".format(elfo_oscuro.vida, elfo_oscuro.vida_maxima, nombre, jugador.vida_maxima))
             else:
-                print("Elfo Oscuro: {} / {}\nNombre: 0 / {}\n".format(elfo_oscuro.vida, elfo_oscuro.vida_maxima, nombre,
-                                                                      jugador.vida_maxima))
+                if jugador.esta_vivo():
+                    print("Elfo Oscuro: {} / {}\n{}: {} / {}\n".format(elfo_oscuro.vida, elfo_oscuro.vida_maxima, nombre, jugador.vida,
+                                                                jugador.vida_maxima))
+                else:
+                    print(
+                        "Elfo Oscuro: {} / {}\n{}: 0 / {}\n".format(elfo_oscuro.vida, elfo_oscuro.vida_maxima, nombre, jugador.vida_maxima))
 
 
 def atacar_orko(jugador, nombre):
     orko = Orko()
     while jugador.esta_vivo():
         input("Presione Enter para tirar el dado.")
-        resultado_tablero = random.randint(1, 6)
+        resultado_tablero = random.randint(1, 2)
         print("El dado giro y obtuvo: {}".format(resultado_tablero))
 
         if resultado_tablero in (1, 3, 5):
             print("Ataca a tu enemigo!")
             input("Presione Enter para tirar el dado.")
-            resultado = random.randint(30, 40)
+            resultado = random.randint(1, 6)
             print("Le sacas {} de energía a tu enemigo".format(resultado))
-            orko.hacer_daño(resultado, jugador)
-            if orko.vida >= orko.vida_maxima:
-                orko.vida = orko.vida_maxima
-                if orko.esta_vivo():
-                    print("Orko: {} / {}\n{}: {} / {}\n".format(orko.vida, orko.vida_maxima, nombre, jugador.vida, jugador.vida_maxima))
-                else:
-                    print("Orko: {} / {}\n{}: 0 / {}\n".format(orko.vida, orko.vida_maxima, nombre, jugador.vida_maxima))
+            orko.recibir_daño(resultado, jugador)
+            if orko.esta_vivo():
+                print("Orko: {} / {}\n{}: {} / {}\n".format(orko.vida, orko.vida_maxima, nombre, jugador.vida, jugador.vida_maxima))
             else:
-                if orko.esta_vivo():
-                    print("Orko: {} / {}\n{}: {} / {}\n".format(orko.vida, orko.vida_maxima, nombre, jugador.vida, jugador.vida_maxima))
-                else:
-                    print("Ha ganado la pelea, continue jugando")
-                    break
+                print("Orko: 0 / {}\n{}: {} / {}\n".format(orko.vida_maxima, nombre, jugador.vida, jugador.vida_maxima))
+                print("Ha ganado la pelea, continue jugando")
+                break
         else:
             input("El Orko va a atacarte, presiona Enter para continuar!")
             resultado = random.randint(1, 6)
             print(resultado)
             jugador.recibir_daño(resultado, orko)
-            if jugador.vida >= jugador.vida_maxima:
-                jugador.vida = jugador.vida_maxima
-                if jugador.esta_vivo():
-                    print("Orko: {} / {}\n{}: {} / {}\n".format(orko.vida, orko.vida_maxima, nombre, jugador.vida, jugador.vida_maxima))
-                else:
-                    print("Orko: {} / {}\n{}: 0 / {}\n".format(orko.vida, orko.vida_maxima, nombre, jugador.vida_maxima))
+            if jugador.esta_vivo():
+                print("Orko: {} / {}\n{}: {} / {}\n".format(orko.vida, orko.vida_maxima, nombre, jugador.vida, jugador.vida_maxima))
             else:
-                if jugador.esta_vivo():
-                    print("Orko: {} / {}\n{}: {} / {}\n".format(orko.vida, orko.vida_maxima, nombre, jugador.vida,
-                                                                jugador.vida_maxima))
-                else:
-                    print(
-                        "Orko: {} / {}\n{}: 0 / {}\n".format(orko.vida, orko.vida_maxima, nombre, jugador.vida_maxima))
+                print("Orko: {} / {}\n{}: 0 / {}\n".format(orko.vida, orko.vida_maxima, nombre, jugador.vida_maxima))
 
 
 def jefe_final(jugador, boss, nombre):
@@ -640,7 +665,7 @@ Pero si a pesar de la fogata ningun lobo te encuentra al despertar tendrás tu e
             print("Hace mucho frio esta noche, voy a encender una fogata o no podré descansar\n")
             input("Presione Enter para continuar.\n")
             dado = random.randint(1, 6)
-            print("salio", dado)
+            print("salio", dado) #debug
             if dado in (1, 6):
                 print("Pasaste la noche sin ningun peligro")
                 jugador.vida = jugador.vida_maxima
@@ -688,17 +713,7 @@ Pero si a pesar de la fogata ningun lobo te encuentra al despertar tendrás tu e
             print("La opción ingresada es incorrecta, vuelva a intertarlo")
 
         break
-# Cuando duermo con fogata la vida se recupera al 100% del maximo actual de vida
-# En las casillas 10 y 15 frenar si o si
-# durante las luchas tener la posibilidad de tomar posiciones de vida
-##un demonio dorado, que tenga 100 de vida, que cuando grita se cura 5 de vida y daña 20 potenciado
 
 
-# print("-Pense que nunca vendrias o que ya estarias muerto-", nombre)
-# print("-¿Quien eres?-, pregunto el",jugador.categoria)
-# print("-Despues de todo este camino, no descubriste quien soy, hermano....")
-# print("-Yo no tengo ningun hermano-. dijo el",jugador.categoria, nombre)
-# print("-Jajaja, eso es lo que siempre creiste-\n")
-# print("mas historia proximamente\n")
-# print("-Pero hoy moriras, el reino de Camelot caera y a ti nadie te recordada-")
-# print("-Eso lo veremos-. Dijo el", jugador.categoria, nombre)
+# Merlin esta durmiendo si la suma da 10 es tuyas y no te vas corriendo y no la volves a ver
+# funcion batalla le paso dos personajes (jugador, enemigo)
