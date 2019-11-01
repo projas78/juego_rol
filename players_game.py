@@ -17,8 +17,8 @@ class Player:
     def recibir_daño(self, daño, enemigo):
         self.vida = self.vida - (daño - self.defensa + enemigo.ataque)
 
-    def atacar(self, daño):
-        self.vida = self.vida - (daño + self.ataque)
+    def hacer_daño(self, daño, enemigo):
+        self.vida = self.vida - (daño - enemigo.defensa + self.ataque)
 
     def esta_vivo(self):
         return self.vida > 0
@@ -46,32 +46,32 @@ class Personajes:
 
 class Caballero(Player):
     def __init__(self):
-        super(Caballero, self).__init__("Caballero", 0, 0, 100, 100, 3, "Espada")
+        super(Caballero, self).__init__("Caballero", 9, 20, 100, 100, 3, "Espada")
 
 
 class Mago(Player):
     def __init__(self):
-        super(Mago, self).__init__("Mago", 17, 0, 100, 100, 6, "Varita")
+        super(Mago, self).__init__("Mago", 6, 4, 100, 100, 6, "Varita")
 
 
 class Arquero(Player):
     def __init__(self):
-        super(Arquero, self).__init__("Arquero", 16, 0, 70, 70, 9, "Arco y Flecha")
+        super(Arquero, self).__init__("Arquero", 3, 3, 70, 70, 9, "Arco y Flecha")
 
 
 class Orko(Player):
     def __init__(self):
-        super(Orko, self).__init__("Orko", 14, 0, 18, 18, 2, "Mazo")
+        super(Orko, self).__init__("Orko", 8, 6, 20, 20, 2, "Mazo")
 
 
-class Elfo_oscuro(Player):
+class Elfo_Oscuro(Player):
     def __init__(self):
-        super(Elfo_oscuro, self).__init__("Elfo_oscuro", 6, 0, 8, 8, 6, "Magia Oscura")
+        super(Elfo_Oscuro, self).__init__("Elfo_oscuro", 6, 4, 14, 14, 6, "Magia Oscura")
 
 
 class Ladron(Player):
     def __init__(self):
-        super(Ladron, self).__init__("Ladron", 3, 0, 5, 5, 4, "Golpes")
+        super(Ladron, self).__init__("Ladron", 2, 1, 5, 5, 2, "Golpes")
 
 
 class Jefe_Final(Player):
@@ -80,23 +80,29 @@ class Jefe_Final(Player):
 
 class Armadura_Dorada(Player):
     def __init__(self):
-        super(Armadura_Dorada, self).__init__("Armadura Dorada", 12, 0, 13, 13, 11, "Gigante")
+        super(Armadura_Dorada, self).__init__("Armadura Dorada", 6, 4, 25, 25, 11, "Gigante")
 
 
 class Protego(Player):
     def __init__(self):
-        super(Protego, self).__init__("Troll de la montaña", 20, 0, 10, 10, 15, "Mazo de madera")
+        super(Protego, self).__init__("Troll de la montaña", 8, 5, 20, 20, 15, "Mazo de madera")
 
 
 class Merlin(Player):
     def __init__(self):
-        super(Merlin, self).__init__("Mago Supremo", 18, 0, 16, 16, 15, "Varita de Sauco")
+        super(Merlin, self).__init__("Mago Supremo", 7, 4, 18, 18, 15, "Varita de Sauco")
 
 
 class Hombre_Lobo(Player):
     def __init__(self):
-        super(Hombre_Lobo, self).__init__("Hombre Lobo", 18, 0, 16, 16, 25, "Mordedura")
+        super(Hombre_Lobo, self).__init__("Hombre Lobo", 10, 5, 16, 16, 25, "Mordedura")
 
+
+def tirar_dado():
+    input("Presione Enter para tirar el dado.\n")
+    resultado = random.randint(7, 7)  # solo debug
+
+    return resultado
 
 def mostrar_reglas():
     print("""Bienvenido a Mundo Medieval
@@ -209,8 +215,7 @@ def tablero(jugador, nombre, boss):
     winner = False
     recorrer_tablero = 0
     while jugador.esta_vivo():
-        input("Presione Enter para tirar el dado.\n")
-        resultado = random.randint(9, 9)  # solo debug
+        resultado = tirar_dado()
         print("El dado giro y obtuvo: {}".format(resultado))
         if recorrer_tablero < 10:
             recorrer_tablero = min(recorrer_tablero + resultado, 10)
@@ -222,8 +227,13 @@ def tablero(jugador, nombre, boss):
             print("Usted avanza a la posición: {}\n".format(recorrer_tablero))
             print("Vuelva a tirar el dado\n")
         elif recorrer_tablero == 9:
-            jugador.vida += 2
-            print("Escontraste un arbol de manzanas y comes una, recuperas 2 de energía:", jugador.vida, "/", jugador.vida_maxima)
+            if jugador.vida == jugador.vida_maxima:
+                jugador.vida = jugador.vida_maxima
+                print("Escontraste un arbol de manzanas y comes una, recuperas 2 de energía:", jugador.vida, "/",
+                      jugador.vida_maxima)
+            else:
+                jugador.vida += 2
+                print("Escontraste un arbol de manzanas y comes una, recuperas 2 de energía:", jugador.vida, "/", jugador.vida_maxima)
 
         elif recorrer_tablero in (3, 7):
             print("Usted avanza a la posición: {}\n".format(recorrer_tablero))
@@ -316,7 +326,6 @@ def atacar_ladron(jugador, nombre):
             input("Presione Enter para tirar el dado.")
             resultado = random.randint(1, 2)
             print("Le sacas {} de energía a tu enemigo".format(resultado))
-
             ladron.recibir_daño(resultado, jugador)
             if ladron.esta_vivo():
                 print("Ladron: {} / {}\n{}: {} / {}\n".format(ladron.vida, ladron.vida_maxima, nombre, jugador.vida,
@@ -337,7 +346,7 @@ def atacar_ladron(jugador, nombre):
 
 
 def atacar_elfo_oscuro(jugador, nombre):
-    elfo_oscuro = Elfo_oscuro()
+    elfo_oscuro = Elfo_Oscuro()
     while jugador.esta_vivo():
         input("Presione cualquier tecla para tirar el dado.")
         resultado_tablero = random.randint(1, 6)
@@ -346,8 +355,8 @@ def atacar_elfo_oscuro(jugador, nombre):
             print("Ataca a tu enemigo, tira el dado")
             input("Presione cualquier tecla para tirar el dado.")
             resultado = random.randint(1, 2)
-            print("El dado giro y obtuvo: {}".format(resultado))
-            elfo_oscuro.recibir_daño(resultado)
+            print("Le sacas {} de energía a tu enemigo".format(resultado))
+            elfo_oscuro.hacer_daño(resultado, jugador)
             if elfo_oscuro.esta_vivo():
                 print("Elfo Oscuro: {} / {}\n{}: {} / {}\n".format(elfo_oscuro.vida, elfo_oscuro.vida_maxima, nombre,
                                                                    jugador.vida, jugador.vida_maxima))
@@ -356,8 +365,8 @@ def atacar_elfo_oscuro(jugador, nombre):
                 break
         else:
             input("El Elfo Oscuro va a atacarte, presiona Enter para continuar!")
-            resultado = random.randint(1, 2)
-            jugador.recibir_daño(resultado)  # solo debug
+            resultado = random.randint(1, 6)
+            jugador.recibir_daño(resultado, elfo_oscuro)  # solo debug
             if jugador.esta_vivo():
                 print("Elfo Oscuro: {} / {}\n{}: {} / {}\n".format(elfo_oscuro.vida, elfo_oscuro.vida_maxima, nombre,
                                                                         jugador.vida, jugador.vida_maxima))
@@ -370,28 +379,45 @@ def atacar_orko(jugador, nombre):
     orko = Orko()
     while jugador.esta_vivo():
         input("Presione Enter para tirar el dado.")
-        resultado_tablero = random.randint(1, 2)
+        resultado_tablero = random.randint(1, 6)
         print("El dado giro y obtuvo: {}".format(resultado_tablero))
 
         if resultado_tablero in (1, 3, 5):
             print("Ataca a tu enemigo!")
             input("Presione Enter para tirar el dado.")
-            resultado = random.randint(1, 2)
-            print("El dado giro y obtuvo: {}".format(resultado))
-            orko.recibir_daño(resultado)
-            if orko.esta_vivo():
-                print("Orko: {} / {}\n{}: {} / {}\n".format(orko.vida, orko.vida_maxima, nombre, jugador.vida, jugador.vida_maxima))
+            resultado = random.randint(30, 40)
+            print("Le sacas {} de energía a tu enemigo".format(resultado))
+            orko.hacer_daño(resultado, jugador)
+            if orko.vida >= orko.vida_maxima:
+                orko.vida = orko.vida_maxima
+                if orko.esta_vivo():
+                    print("Orko: {} / {}\n{}: {} / {}\n".format(orko.vida, orko.vida_maxima, nombre, jugador.vida, jugador.vida_maxima))
+                else:
+                    print("Orko: {} / {}\n{}: 0 / {}\n".format(orko.vida, orko.vida_maxima, nombre, jugador.vida_maxima))
             else:
-                print("Ha ganado la pelea, continue jugando")
-                break
+                if orko.esta_vivo():
+                    print("Orko: {} / {}\n{}: {} / {}\n".format(orko.vida, orko.vida_maxima, nombre, jugador.vida, jugador.vida_maxima))
+                else:
+                    print("Ha ganado la pelea, continue jugando")
+                    break
         else:
             input("El Orko va a atacarte, presiona Enter para continuar!")
-            resultado = random.randint(1, 2)
-            jugador.recibir_daño(resultado)
-            if jugador.esta_vivo():
-                print("Orko: {} / {}\n{}: {} / {}\n".format(orko.vida, orko.vida_maxima, nombre, jugador.vida, jugador.vida_maxima))
+            resultado = random.randint(1, 6)
+            print(resultado)
+            jugador.recibir_daño(resultado, orko)
+            if jugador.vida >= jugador.vida_maxima:
+                jugador.vida = jugador.vida_maxima
+                if jugador.esta_vivo():
+                    print("Orko: {} / {}\n{}: {} / {}\n".format(orko.vida, orko.vida_maxima, nombre, jugador.vida, jugador.vida_maxima))
+                else:
+                    print("Orko: {} / {}\n{}: 0 / {}\n".format(orko.vida, orko.vida_maxima, nombre, jugador.vida_maxima))
             else:
-                print("Orko: {} / {}\n{}: 0 / {}\n".format(orko.vida, orko.vida_maxima, nombre, jugador.vida_maxima))
+                if jugador.esta_vivo():
+                    print("Orko: {} / {}\n{}: {} / {}\n".format(orko.vida, orko.vida_maxima, nombre, jugador.vida,
+                                                                jugador.vida_maxima))
+                else:
+                    print(
+                        "Orko: {} / {}\n{}: 0 / {}\n".format(orko.vida, orko.vida_maxima, nombre, jugador.vida_maxima))
 
 
 def jefe_final(jugador, boss, nombre):
@@ -414,17 +440,7 @@ def jefe_final(jugador, boss, nombre):
         else:
             input("Orion va a atacarte, presiona Enter para continuar!\n")
             resultado = random.randint(1, 6)
-            print("resultado", resultado) #debug
-            #defensa = jugador.defensa #debug
-            #daño = jugador.recibir_daño #debug
-            #daño_resultado = jugador.recibir_daño(resultado) #debug
-            ##print("defensa", defensa) #debug
-            #print("daño", daño) #debug
-            #print("daño - resultado", daño_resultado) #debug
-            #if resultado < jugador.defensa:
-            #    jugador.recibir_daño(resultado)
-            #else:
-            jugador.recibir_daño(resultado)
+            jugador.recibir_daño(resultado, boss)
             if jugador.esta_vivo():
                 print("Orion: {} / {}\n{}: {} / {}\n".format(boss.vida, boss.vida_maxima, nombre, jugador.vida, jugador.vida_maxima))
             else:
@@ -474,7 +490,7 @@ Pero para conseguirla deberás vencer al Gigante de Hierro.
             input("Presione Enter para tirar el dado.")
             resultado = random.randint(1, 6)
             print("El dado giro y obtuvo: {}".format(resultado))
-            armadura_dorada.recibir_daño(resultado)
+            armadura_dorada.recibir_daño(resultado, jugador)
             if armadura_dorada.esta_vivo():
                 print("Gigante de Hierro: {} / {}\n{}: {} / {}\n".format(armadura_dorada.vida, armadura_dorada.vida_maxima, nombre, jugador.vida, jugador.vida_maxima))
             else:
@@ -486,7 +502,7 @@ Pero para conseguirla deberás vencer al Gigante de Hierro.
             input("El Gigante de Hierro va a atacarte, presiona Enter para continuar!")
             resultado = random.randint(1, 2)
             print(resultado)
-            jugador.recibir_daño(resultado)
+            jugador.recibir_daño(resultado, armadura_dorada)
             if jugador.esta_vivo():
                 print("Gigante de Hierro: {} / {}\n{}: {} / {}\n".format(armadura_dorada.vida, armadura_dorada.vida_maxima, nombre, jugador.vida, jugador.vida_maxima))
             else:
@@ -529,7 +545,7 @@ def sec_hechizo_escudo(jugador, nombre):
             input("Presione Enter para tirar el dado.")
             resultado = random.randint(1, 6)
             print("El dado giro y obtuvo: {}".format(resultado))
-            protego.recibir_daño(resultado)
+            protego.recibir_daño(resultado, jugador)
             if protego.esta_vivo():
                 print("Troll de la montaña: {} / {}\n{}: {} / {}\n".format(protego.vida, protego.vida_maxima, nombre, jugador.vida, jugador.vida_maxima))
             else:
@@ -539,7 +555,7 @@ def sec_hechizo_escudo(jugador, nombre):
         else:
             input("Troll de la montaña va a atacarte, presiona Enter para continuar!")
             resultado = random.randint(1, 2)
-            jugador.recibir_daño(resultado)
+            jugador.recibir_daño(resultado, protego)
             if jugador.esta_vivo():
                 print("Troll de la montaña: {} / {}\n{}: {} / {}\n".format(protego.vida, protego.vida_maxima, nombre, jugador.vida, jugador.vida_maxima))
             else:
@@ -558,7 +574,7 @@ def sec_varita_sauco(jugador, nombre):
             input("Presione Enter para tirar el dado.")
             resultado = random.randint(1, 6)
             print("El dado giro y obtuvo: {}".format(resultado))
-            merlin.recibir_daño(resultado)
+            merlin.recibir_daño(resultado, jugador)
             if merlin.esta_vivo():
                 print("El Mago Merlin: {} / {}\n{}: {} / {}\n".format(merlin.vida, merlin.vida_maxima, nombre, jugador.vida, jugador.vida_maxima))
             else:
@@ -567,7 +583,7 @@ def sec_varita_sauco(jugador, nombre):
         else:
             input("El Mago Merlin va a atacarte, presiona Enter para continuar!")
             resultado = random.randint(1, 2)
-            jugador.recibir_daño(resultado)
+            jugador.recibir_daño(resultado, merlin)
             if jugador.esta_vivo():
                 print("El Mago Merlin: {} / {}\n{}: {} / {}\n".format(merlin.vida, merlin.vida_maxima, nombre, jugador.vida, jugador.vida_maxima))
             else:
@@ -645,7 +661,7 @@ Pero si a pesar de la fogata ningun lobo te encuentra al despertar tendrás tu e
                         input("Presione Enter para tirar el dado.")
                         resultado = random.randint(1, 6)
                         print("El dado giro y obtuvo: {}".format(resultado))
-                        hombre_lobo.recibir_daño(resultado)
+                        hombre_lobo.recibir_daño(resultado, jugador)
                         if hombre_lobo.esta_vivo():
                             print(
                                 "Hombre Lobo: {} / {}\n{}: {} / {}\n".format(hombre_lobo.vida, hombre_lobo.vida_maxima,
@@ -658,7 +674,7 @@ Pero si a pesar de la fogata ningun lobo te encuentra al despertar tendrás tu e
                     else:
                         input("Hombre Lobo va a atacarte, presiona Enter para continuar!")
                         resultado = random.randint(1, 2)
-                        jugador.recibir_daño(resultado)
+                        jugador.recibir_daño(resultado, hombre_lobo)
                         if jugador.esta_vivo():
                             print(
                                 "Hombre Lobo: {} / {}\n{}: {} / {}\n".format(hombre_lobo.vida, hombre_lobo.vida_maxima,
