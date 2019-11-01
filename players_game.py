@@ -607,4 +607,9 @@ Pero si a pesar de la fogata ningun lobo te encuentra al despertar tendrás tu e
 
 
 # Merlin esta durmiendo si la suma da 10 es tuyas y no te vas corriendo y no la volves a ver
-# funcion batalla le paso dos personajes (jugador, enemigo)
+# funcion batalla le paso dos personajes (jugador, enemigo) ya esta, modificar las batallas secundarias
+# que cada batalla te x cantidad de oro y al final del juego te diga cuanto ganaste
+# agregar a la clase Personajes oro y pociones
+# que cuando le toque atacar al jugador te deje elegir entre atacar o tomar pocion de energia.
+# arrancar con una 1 pocion y 3 monedas
+# agregar tiendas para comprar suministros (por ahora pociones)
