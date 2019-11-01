@@ -417,6 +417,9 @@ def atacar_elfo_oscuro(jugador, nombre):
 
 def atacar_orko(jugador, nombre):
     orko = Orko()
+    batalla(jugador, nombre, orko)
+
+def batalla(jugador, nombre, enemigo):
     while jugador.esta_vivo():
         input("Presione Enter para tirar el dado.")
         resultado_tablero = random.randint(1, 2)
@@ -427,22 +430,22 @@ def atacar_orko(jugador, nombre):
             input("Presione Enter para tirar el dado.")
             resultado = random.randint(1, 6)
             print("Le sacas {} de energía a tu enemigo".format(resultado))
-            orko.recibir_daño(resultado, jugador)
-            if orko.esta_vivo():
-                print("Orko: {} / {}\n{}: {} / {}\n".format(orko.vida, orko.vida_maxima, nombre, jugador.vida, jugador.vida_maxima))
+            enemigo.recibir_daño(resultado, jugador)
+            if enemigo.esta_vivo():
+                print("{}: {} / {}\n{}: {} / {}\n".format(enemigo.categoria, enemigo.vida, enemigo.vida_maxima, nombre, jugador.vida, jugador.vida_maxima))
             else:
-                print("Orko: 0 / {}\n{}: {} / {}\n".format(orko.vida_maxima, nombre, jugador.vida, jugador.vida_maxima))
+                print("{}: 0 / {}\n{}: {} / {}\n".format(enemigo.categoria, enemigo.vida_maxima, nombre, jugador.vida, jugador.vida_maxima))
                 print("Ha ganado la pelea, continue jugando")
                 break
         else:
-            input("El Orko va a atacarte, presiona Enter para continuar!")
+            input("El {} va a atacarte, presiona Enter para continuar!".format(enemigo.categoria))
             resultado = random.randint(1, 6)
             print(resultado)
-            jugador.recibir_daño(resultado, orko)
+            jugador.recibir_daño(resultado, enemigo)
             if jugador.esta_vivo():
-                print("Orko: {} / {}\n{}: {} / {}\n".format(orko.vida, orko.vida_maxima, nombre, jugador.vida, jugador.vida_maxima))
+                print("{}: {} / {}\n{}: {} / {}\n".format(enemigo.categoria, enemigo.vida, enemigo.vida_maxima, nombre, jugador.vida, jugador.vida_maxima))
             else:
-                print("Orko: {} / {}\n{}: 0 / {}\n".format(orko.vida, orko.vida_maxima, nombre, jugador.vida_maxima))
+                print("{}: {} / {}\n{}: 0 / {}\n".format(enemigo.categoria, enemigo.vida, enemigo.vida_maxima, nombre, jugador.vida_maxima))
 
 
 def jefe_final(jugador, boss, nombre):
