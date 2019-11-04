@@ -5,7 +5,7 @@ from db import agregar_jugador, lista_jugadores, gano, perdio
 
 class Player:
 
-    def __init__(self, categoria, ataque, defensa, vida, vida_maxima, velocidad, arma):
+    def __init__(self, categoria, ataque, defensa, vida, vida_maxima, velocidad, arma, pociones=0, monedas_de_oro=0):
         self.categoria = categoria
         self.ataque = ataque
         self.defensa = defensa
@@ -13,6 +13,9 @@ class Player:
         self.vida_maxima = vida_maxima
         self.velocidad = velocidad
         self.arma = arma
+        self.pociones = pociones
+        self.monedas_de_oro = monedas_de_oro
+
 
     def recibir_daño(self, daño, enemigo):
         total_damage = (daño - self.defensa + enemigo.ataque)
@@ -27,7 +30,8 @@ class Player:
 
     def __str__(self):
         return f'Categoria: {self.categoria} \nAtaque: {self.ataque} \nDefensa: {self.defensa}' \
-               f'\nVida: {self.vida} / {self.vida_maxima} \nVelocidad: {self.velocidad} \nArma: {self.arma}'
+               f'\nVida: {self.vida} / {self.vida_maxima} \nVelocidad: {self.velocidad} \nArma: {self.arma} ' \
+               f'\nPociones: {self.pociones} \nMonedas de Oro: {self.monedas_de_oro}'
 
 
 class Personajes:
@@ -77,7 +81,9 @@ class Ladron(Player):
 
 
 class Jefe_Final(Player):
-    pass
+    def __str__(self):
+        return f'Categoria: {self.categoria} \nAtaque: {self.ataque} \nDefensa: {self.defensa}' \
+               f'\nVida: {self.vida} / {self.vida_maxima} \nVelocidad: {self.velocidad} \nArma: {self.arma}'
 
 
 class GiganteDeHierro(Player):
@@ -101,6 +107,7 @@ class Hombre_Lobo(Player):
 
 
 def tirar_dado(minimo, maximo):
+    input("Presione Enter para tirar el dado.\n")
     resultado = random.randint(minimo, maximo)
 
     return resultado
@@ -216,6 +223,7 @@ def tablero(jugador, nombre, boss):
     winner = False
     recorrer_tablero = 0
     while jugador.esta_vivo():
+
         resultado = tirar_dado(10, 10)
         print("El dado giro y obtuvo: {}".format(resultado))
         if recorrer_tablero < 10:
@@ -370,7 +378,7 @@ def jefe_final(jugador, boss, nombre):
             input("Presione Enter para tirar el dado.")
             resultado = tirar_dado(1, 6)
             print("Le sacas {} de energia a tu enemigo".format(resultado))
-            boss.recibir_daño(resultado)
+            boss.recibir_daño(resultado, jugador)
             if boss.esta_vivo():
                 print("Orion: {} / {}\n{}: {} / {}\n".format(boss.vida, boss.vida_maxima, nombre, jugador.vida, jugador.vida_maxima))
             else:
@@ -442,7 +450,7 @@ def conseguir_armas(jugador, nombre, arma, damage):
         print("El dado giro y obtuvo: {}".format(dado))
         resultado = dado + resultado
         if resultado >= 10:
-            print("Felicitaciones {} {}, obtuviste la {}, tu ataque se incrementa en {}".format(
+            print("Felicitaciones {} {}, obtuviste la {}, tu ataque se incrementa en {}\n".format(
                 jugador.categoria, nombre, arma, damage
             ))
             jugador.ataque += damage
