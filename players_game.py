@@ -82,7 +82,7 @@ class Jefe_Final(Player):
 
 class GiganteDeHierro(Player):
     def __init__(self):
-        super(GiganteDeHierro, self).__init__("Gigante de Hierro", 100, 4, 25, 25, 11, "Espada Gigante")
+        super(GiganteDeHierro, self).__init__("Gigante de Hierro", 10, 4, 25, 25, 11, "Espada Gigante")
 
 
 class Protego(Player):
@@ -101,8 +101,7 @@ class Hombre_Lobo(Player):
 
 
 def tirar_dado(minimo, maximo):
-    input("Presione Enter para tirar el dado.\n")
-    resultado = random.randint(minimo, maximo)  # solo debug
+    resultado = random.randint(minimo, maximo)
 
     return resultado
 
@@ -217,7 +216,7 @@ def tablero(jugador, nombre, boss):
     winner = False
     recorrer_tablero = 0
     while jugador.esta_vivo():
-        resultado = tirar_dado(1, 6)
+        resultado = tirar_dado(10, 10)
         print("El dado giro y obtuvo: {}".format(resultado))
         if recorrer_tablero < 10:
             recorrer_tablero = min(recorrer_tablero + resultado, 10)
@@ -425,13 +424,15 @@ Pero para conseguirla deberás vencer al Gigante de Hierro.
         jugador.defensa += 4
 
 
-def sec_espada_excallibur(jugador, nombre):
-    print("""Bienevido {} {}. Te encontraste con la espada de Excalibur atrapada en una roca.
-Para obtenerla debe tirar con fuerza de la espalda para sacarla de la roca.
-Reglas:
-Podras tirar el dado hasta 4 veces y deberas sumar 10 o más punto para obtener la espada.
-Si tiraste el dado las 4 veces y no sumaste 10 la espada desaparecerá y no podrás volver a intentarlo.
-    """.format(jugador.categoria, nombre))
+def sec_hechizo_escudo(jugador, nombre):
+    protego = Protego()
+    batalla(jugador, nombre, protego)
+    if jugador.esta_vivo:
+        print("Aprendiste el hechizo Protego")
+        jugador.defensa += 2
+
+
+def conseguir_armas(jugador, nombre, arma, damage):
     contador = 0
     resultado = 0
     while contador < 4:
@@ -441,69 +442,31 @@ Si tiraste el dado las 4 veces y no sumaste 10 la espada desaparecerá y no podr
         print("El dado giro y obtuvo: {}".format(dado))
         resultado = dado + resultado
         if resultado >= 10:
-            print("Felicitaciones, obtuviste la espada de Escalibur, tu ataque se incrementa en +2")
-            jugador.ataque += 2
+            print("Felicitaciones {} {}, obtuviste la {}, tu ataque se incrementa en {}".format(
+                jugador.categoria, nombre, arma, damage
+            ))
+            jugador.ataque += damage
+            jugador.arma = arma
+            print(jugador)
             break
         else:
-            print("Tiraste de la espada {} veces y tu puntajes es {}.\n".format(contador, resultado))
+            print("Tiraste de la {} {} veces y tu puntajes es {}.\n".format(arma, contador, resultado))
     else:
-        print("No eres digno de tener la espada de escalibur")
+        print("No eres digno de tener la {}".format(arma))
 
-def sec_hechizo_escudo(jugador, nombre):
-    protego = Protego()
-    while jugador.esta_vivo():
-        input("Presione Enter para tirar el dado.")
-        resultado_tablero = tirar_dado(1, 6)
-        print("El dado giro y obtuvo: {}".format(resultado_tablero))
 
-        if resultado_tablero in (1, 3, 5):
-            print("Ataca a tu enemigo\n!")
-            input("Presione Enter para tirar el dado.")
-            resultado = tirar_dado(1, 6)
-            print("El dado giro y obtuvo: {}".format(resultado))
-            protego.recibir_daño(resultado, jugador)
-            if protego.esta_vivo():
-                print("Troll de la montaña: {} / {}\n{}: {} / {}\n".format(protego.vida, protego.vida_maxima, nombre, jugador.vida, jugador.vida_maxima))
-            else:
-                print("Ha ganado la pelea, continue jugando\n")
-                jugador.defensa += 2
-                break
-        else:
-            input("Troll de la montaña va a atacarte, presiona Enter para continuar!")
-            resultado = tirar_dado(1, 2)
-            jugador.recibir_daño(resultado, protego)
-            if jugador.esta_vivo():
-                print("Troll de la montaña: {} / {}\n{}: {} / {}\n".format(protego.vida, protego.vida_maxima, nombre, jugador.vida, jugador.vida_maxima))
-            else:
-                print("Troll de la montaña: {} / {}\n{}: 0 / {}\n".format(protego.vida, protego.vida_maxima, nombre, jugador.vida_maxima))
+def sec_espada_excallibur(jugador, nombre):
+    print("""Bienevido {} {}. Te encontraste con la espada de Excalibur atrapada en una roca.
+Para obtenerla debe tirar con fuerza de la espalda para sacarla de la roca.
+Reglas:
+Podras tirar el dado hasta 4 veces y deberas sumar 10 o más punto para obtener la espada.
+Si tiraste el dado las 4 veces y no sumaste 10 la espada desaparecerá y no podrás volver a intentarlo.
+    """.format(jugador.categoria, nombre))
+    conseguir_armas(jugador, nombre, arma="Espada de Excalibur", damage=2)
 
 
 def sec_varita_sauco(jugador, nombre):
-    merlin = Merlin()
-    while jugador.esta_vivo():
-        input("Presione Enter para tirar el dado.")
-        resultado_tablero = tirar_dado(1, 6)
-        print("El dado giro y obtuvo: {}".format(resultado_tablero))
-
-        if resultado_tablero in (1, 3, 5):
-            print("Ataca a tu enemigo\n!")
-            input("Presione Enter para tirar el dado.")
-            resultado = tirar_dado(1, 6)
-            print("El dado giro y obtuvo: {}".format(resultado))
-            merlin.recibir_daño(resultado, jugador)
-            if merlin.esta_vivo():
-                print("El Mago Merlin: {} / {}\n{}: {} / {}\n".format(merlin.vida, merlin.vida_maxima, nombre, jugador.vida, jugador.vida_maxima))
-            else:
-                print("Ha ganado la pelea, continue jugando\n")
-                break
-        else:
-            input("El Mago Merlin va a atacarte, presiona Enter para continuar!")
-            resultado = tirar_dado(1, 2)
-            jugador.recibir_daño(resultado, merlin)
-            if jugador.esta_vivo():
-                print("El Mago Merlin: {} / {}\n{}: {} / {}\n".format(merlin.vida, merlin.vida_maxima, nombre, jugador.vida, jugador.vida_maxima))
-            else:
-                print("El Mago Merlin: {} / {}\n{}: 0 / {}\n".format(merlin.vida, merlin.vida_maxima, nombre, jugador.vida_maxima))
+    conseguir_armas(jugador, nombre, arma="Varita de Sauco", damage=4)
 
 
 def sec_arco_robin_hood(jugador, nombre):
@@ -512,21 +475,7 @@ def sec_arco_robin_hood(jugador, nombre):
     Podras tirar el dado hasta 4 veces y deberas sumar 10 o más punto para obtener la espada.
     Si tiraste el dado las 4 veces y no sumaste 10 el escudo desaparecerá y no podrás volver a intentarlo.
         """.format(jugador.categoria, nombre))
-    contador = 0
-    resultado = 0
-    while contador < 4:
-        input("Presione Enter para tirar el dado.")
-        dado = tirar_dado(3, 3)
-        contador += 1
-        print("El dado giro y obtuvo: {}".format(dado))
-        resultado = dado + resultado
-        if resultado >= 10:
-            print("Felicitaciones, obtuviste el arco de Robin Hood, tu ataque se incrementa en +2")
-            break
-        else:
-            print("Tiraste con tu arco {} veces y tu puntajes es {}.\n".format(contador, resultado))
-    else:
-        print("No eres digno de tener el arco de Robin Hood")
+    conseguir_armas(jugador, nombre, arma="Arco de Robin Hood", damage=2)
 
 
 def dormir(jugador, nombre):
@@ -606,7 +555,7 @@ Pero si a pesar de la fogata ningun lobo te encuentra al despertar tendrás tu e
         break
 
 
-# Merlin esta durmiendo si la suma da 10 es tuyas y no te vas corriendo y no la volves a ver
+# Merlin esta durmiendo si la suma da 10 es tuyas y no te vas corriendo y no la volves a ver (cambio a albus dumbeldore, mergear con el codigo de casa)
 # funcion batalla le paso dos personajes (jugador, enemigo) ya esta, modificar las batallas secundarias
 # que cada batalla te x cantidad de oro y al final del juego te diga cuanto ganaste
 # agregar a la clase Personajes oro y pociones
