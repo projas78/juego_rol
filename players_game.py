@@ -1,5 +1,6 @@
 import random
 
+from constantes import VALOR_POCION, VALOR_MANZANA, PRECIO_POCION
 from db import agregar_jugador, lista_jugadores, gano, perdio
 
 
@@ -106,6 +107,20 @@ class Hombre_Lobo(Player):
         super(Hombre_Lobo, self).__init__("Hombre Lobo", 10, 5, 16, 16, 25, "Mordedura")
 
 
+class ItemRecuperacion():
+    def __init__(self, valor):
+        self.valor = valor
+
+class Pocion(ItemRecuperacion):
+    def __init__(self):
+        super(ItemRecuperacion, self).__init__(VALOR_POCION)
+
+
+class Manzana(ItemRecuperacion):
+    def __init__(self):
+        super(ItemRecuperacion, self).__init__(VALOR_MANZANA)
+
+
 def tirar_dado(minimo, maximo):
     input("Presione Enter para tirar el dado.\n")
     resultado = random.randint(minimo, maximo)
@@ -190,6 +205,8 @@ def guardar_jugador(nombre, categoria):
 def decir_bienvenido(nombre, jugador):
     print("Bienvenido", jugador.categoria, nombre)
     print("Su jugador tiene los siguientes atributos\n")
+    jugador.pociones += 1
+    jugador.monedas_de_oro += 3
     print(jugador, "\n")
 
 
@@ -224,7 +241,7 @@ def tablero(jugador, nombre, boss):
     recorrer_tablero = 0
     while jugador.esta_vivo():
 
-        resultado = tirar_dado(10, 10)
+        resultado = tirar_dado(4, 4)
         print("El dado giro y obtuvo: {}".format(resultado))
         if recorrer_tablero < 10:
             recorrer_tablero = min(recorrer_tablero + resultado, 10)
@@ -324,28 +341,29 @@ aprenderlo o 'n' si prefiere seguir por el camino\n""")
 
 def atacar_ladron(jugador, nombre):
     ladron = Ladron()
+    jugador.monedas_de_oro += 1
     batalla(jugador, nombre, ladron)
 
 
 def atacar_elfo_oscuro(jugador, nombre):
     elfo_oscuro = Elfo_Oscuro()
+    jugador.monedas_de_oro += 2
     batalla(jugador, nombre, elfo_oscuro)
 
 
 def atacar_orko(jugador, nombre):
     orko = Orko()
+    jugador.monedas_de_oro += 3
     batalla(jugador, nombre, orko)
 
 
 def batalla(jugador, nombre, enemigo):
     while jugador.esta_vivo():
-        input("Presione Enter para tirar el dado.")
         resultado_tablero = tirar_dado(1, 6)
         print("El dado giro y obtuvo: {}".format(resultado_tablero))
 
         if resultado_tablero in (1, 3, 5):
             print("Ataca a tu enemigo!")
-            input("Presione Enter para tirar el dado.")
             resultado = tirar_dado(1, 6)
             print("Le sacas {} de energía a tu enemigo con tu {}".format(resultado, jugador.arma))
             enemigo.recibir_daño(resultado, jugador)
@@ -353,7 +371,8 @@ def batalla(jugador, nombre, enemigo):
                 print("{}: {} / {}\n{}: {} / {}\n".format(enemigo.categoria, enemigo.vida, enemigo.vida_maxima, nombre, jugador.vida, jugador.vida_maxima))
             else:
                 print("{}: 0 / {}\n{}: {} / {}\n".format(enemigo.categoria, enemigo.vida_maxima, nombre, jugador.vida, jugador.vida_maxima))
-                print("Ha ganado la pelea, continue jugando")
+                print("Ha ganado la pelea, continue jugando, obtiene {} moneda de oro".format(jugador.monedas_de_oro))
+                print(jugador)
                 break
         else:
             input("El {} va a atacarte con su {}, presiona Enter para continuar!".format(enemigo.categoria, enemigo.arma))
@@ -561,6 +580,19 @@ Pero si a pesar de la fogata ningun lobo te encuentra al despertar tendrás tu e
             print("La opción ingresada es incorrecta, vuelva a intertarlo")
 
         break
+
+def tiendas(jugador, nombre):
+    pociones = 3
+    manzanas = 2
+    print("Encontraste una tienda de venta de articulos que te ayudaran durante tu viaje.")
+    if jugador.monedas_de_oro == 1:
+        print("{} {} tienes {} moneda de oro".format(jugador.categoria, nombre, jugador.monedas_de_oro))
+        input()
+        print("Bienvenido a mi humile tienda noble {}".format(jugador.categoria))
+        print("Tengo los siguientes articulos a la venta.  ¿Que desea comprar?")
+        print("Pociones: ", pociones, "Precio:", {}, "Te regenera {} de vida".format(PRECIO_POCION, VALOR_POCION))
+        print("Manzanas: ", manzanas, "Te regenera {} de vida".format(VALOR_MANZANA))
+
 
 
 # Merlin esta durmiendo si la suma da 10 es tuyas y no te vas corriendo y no la volves a ver (cambio a albus dumbeldore, mergear con el codigo de casa)
