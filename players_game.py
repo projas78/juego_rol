@@ -1,6 +1,6 @@
 import random
 
-from constantes import VALOR_POCION, VALOR_MANZANA, PRECIO_POCION
+from constantes import VALOR_POCION, VALOR_MANZANA, PRECIO_POCION, PRECIO_MANZANA
 from db import agregar_jugador, lista_jugadores, gano, perdio
 
 
@@ -241,15 +241,17 @@ def tablero(jugador, nombre, boss):
     recorrer_tablero = 0
     while jugador.esta_vivo():
 
-        resultado = tirar_dado(4, 4)
+        resultado = tirar_dado(8, 8)
         print("El dado giro y obtuvo: {}".format(resultado))
         if recorrer_tablero < 10:
             recorrer_tablero = min(recorrer_tablero + resultado, 10)
+            print("Usted avanza a la posición: {}\n".format(recorrer_tablero))
         elif recorrer_tablero < 15:
             recorrer_tablero = min(recorrer_tablero + resultado, 15)
+            print("Usted avanza a la posición: {}\n".format(recorrer_tablero))
         else:
             recorrer_tablero += resultado
-        if recorrer_tablero in (1, 2, 8, 11, 16, 17, 18, 19):
+        if recorrer_tablero in (1, 2, 11, 16, 17, 18, 19):
             print("Usted avanza a la posición: {}\n".format(recorrer_tablero))
             print("Vuelva a tirar el dado\n")
         elif recorrer_tablero == 9:
@@ -260,6 +262,9 @@ def tablero(jugador, nombre, boss):
             else:
                 jugador.vida += 2
                 print("Escontraste un arbol de manzanas y comes una, recuperas 2 de energía:", jugador.vida, "/", jugador.vida_maxima)
+        elif recorrer_tablero == 8:
+            print("Usted avanza a la posición: {}\n".format(recorrer_tablero))
+            tiendas(jugador, nombre)
 
         elif recorrer_tablero in (3, 7):
             print("Usted avanza a la posición: {}\n".format(recorrer_tablero))
@@ -463,7 +468,6 @@ def conseguir_armas(jugador, nombre, arma, damage):
     contador = 0
     resultado = 0
     while contador < 4:
-        input("Presione Enter para tirar el dado.")
         dado = tirar_dado(1, 6)
         contador += 1
         print("El dado giro y obtuvo: {}".format(dado))
@@ -584,16 +588,42 @@ Pero si a pesar de la fogata ningun lobo te encuentra al despertar tendrás tu e
 def tiendas(jugador, nombre):
     pociones = 3
     manzanas = 2
-    print("Encontraste una tienda de venta de articulos que te ayudaran durante tu viaje.")
-    if jugador.monedas_de_oro == 1:
-        print("{} {} tienes {} moneda de oro".format(jugador.categoria, nombre, jugador.monedas_de_oro))
-        input()
-        print("Bienvenido a mi humile tienda noble {}".format(jugador.categoria))
-        print("Tengo los siguientes articulos a la venta.  ¿Que desea comprar?")
-        print("Pociones: ", pociones, "Precio:", {}, "Te regenera {} de vida".format(PRECIO_POCION, VALOR_POCION))
-        print("Manzanas: ", manzanas, "Te regenera {} de vida".format(VALOR_MANZANA))
-
-
+    print("Encontraste una tienda de venta de articulos que te ayudarán durante tu viaje.")
+    print("{} {} tienes {} moneda de oro".format(jugador.categoria, nombre, jugador.monedas_de_oro))
+    input("\n")
+    print("Bienvenido a mi humile tienda noble {}".format(jugador.categoria))
+    input("\n")
+    while True:
+        opcion = input("¿Quieres comprar algún articulo?, escriba 'y' or 'n'\n")
+        if opcion.lower() == 'n':
+            print("No necesito nada, voy a continuar mi camino. Adiós!")
+            break
+        elif opcion.lower() == 'y':
+            print("Tengo los siguientes articulos a la venta.\n")
+            print("Pociones: ", pociones, "Precio: {}. Te regenera {} de vida".format(PRECIO_POCION, VALOR_POCION))
+            print("Manzanas: ", manzanas, "Precio: {}. Te regenera {} de vida".format(PRECIO_MANZANA, VALOR_MANZANA))
+            articulo = input("¿Que desea comprar?, seleccione p (pociones) o m (manzanas)\n")
+            if articulo == 'p':
+                cantidad_pociones = input("Cuantas pociones vas a comprar, tengo {}\n".format(pociones))
+                if jugador.pociones > pociones:
+                    print("Solo tengo {} pociones".format(pociones))
+                else:
+                    pociones = pociones - cantidad_pociones
+                    jugador.pociones += cantidad_pociones
+                    print("Ahora tienes {} pociones y en la tienda me quedan {}\n".format(jugador.pociones, pociones))
+                    break
+            elif articulo == 'm':
+                cantidad = input(int("Cuantas manzanas vas a comprar, tengo {}".format(manzanas)))
+                if jugador.cantidad > manzanas:
+                    print("Solo tengo {} manzanas".format(pociones))
+                else:
+                    manzanas -= cantidad
+                    print("Ahora tienes {} manzanas y en la tienda me quedan {}".format(jugador.pociones, pociones))
+                    break
+            else:
+                print("La opción ingresada es incorrecta")
+        else:
+            print("Opción erronea")
 
 # Merlin esta durmiendo si la suma da 10 es tuyas y no te vas corriendo y no la volves a ver (cambio a albus dumbeldore, mergear con el codigo de casa)
 # funcion batalla le paso dos personajes (jugador, enemigo) ya esta, modificar las batallas secundarias
