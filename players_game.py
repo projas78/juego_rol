@@ -600,18 +600,19 @@ def tiendas(jugador, nombre):
             break
         elif opcion.lower() == 'y':
             print("Tengo los siguientes articulos a la venta.\n")
-            print("Pociones: ", pociones, "Precio: {}. Te regenera {} de vida".format(PRECIO_POCION, VALOR_POCION))
-            print("Manzanas: ", manzanas, "Precio: {}. Te regenera {} de vida".format(PRECIO_MANZANA, VALOR_MANZANA))
+            print("Pociones: {} Precio: {}. Te regenera {} de vida".format(pociones, PRECIO_POCION, VALOR_POCION))
+            print("Manzanas: {} Precio: {}. Te regenera {} de vida".format(manzanas, PRECIO_MANZANA, VALOR_MANZANA))
             articulo = input("¿Que desea comprar?, seleccione p (pociones) o m (manzanas)\n")
             if articulo == 'p':
-                cantidad_pociones = input("Cuantas pociones vas a comprar, tengo {}\n".format(pociones))
-                if jugador.pociones > pociones:
+                cantidad_pociones = int(input("Cuantas pociones vas a comprar, tengo {}\n".format(pociones)))
+                if cantidad_pociones > int(pociones):
                     print("Solo tengo {} pociones".format(pociones))
                 else:
-                    pociones = pociones - cantidad_pociones
-                    jugador.pociones += cantidad_pociones
+                    pociones = pociones - int(cantidad_pociones)
+                    jugador.pociones += int(cantidad_pociones)
                     print("Ahora tienes {} pociones y en la tienda me quedan {}\n".format(jugador.pociones, pociones))
-                    break
+                    input("¿Algo mas?")
+
             elif articulo == 'm':
                 cantidad = input(int("Cuantas manzanas vas a comprar, tengo {}".format(manzanas)))
                 if jugador.cantidad > manzanas:
