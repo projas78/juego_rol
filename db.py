@@ -75,3 +75,13 @@ def perdio(nombre):
 
     conexion.commit()
     conexion.close()
+
+
+def partidas_jugadas(nombre):
+    conexion = sqlite3.connect('jugadores.db')
+    cursor = conexion.cursor()
+
+    lista = [nombre]
+    cursor.execute("select * from jugadores where nombre = ?", lista)
+
+    conexion.close()

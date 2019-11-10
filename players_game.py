@@ -1,12 +1,12 @@
 import random
 
 from constantes import VALOR_POCION, VALOR_MANZANA, PRECIO_POCION, PRECIO_MANZANA
-from db import agregar_jugador, lista_jugadores, gano, perdio
+from db import agregar_jugador, lista_jugadores, gano, perdio, partidas_jugadas
 
 
 class Player:
 
-    def __init__(self, categoria, ataque, defensa, vida, vida_maxima, velocidad, arma, pociones=0, monedas_de_oro=0):
+    def __init__(self, categoria, ataque, defensa, vida, vida_maxima, velocidad, arma, pociones=0, manzanas=0, monedas_de_oro=0):
         self.categoria = categoria
         self.ataque = ataque
         self.defensa = defensa
@@ -15,7 +15,9 @@ class Player:
         self.velocidad = velocidad
         self.arma = arma
         self.pociones = pociones
+        self.manzanas = manzanas
         self.monedas_de_oro = monedas_de_oro
+
 
 
     def recibir_daño(self, daño, enemigo):
@@ -25,14 +27,13 @@ class Player:
         else:
             self.vida -= 1
 
-
     def esta_vivo(self):
         return self.vida > 0
 
     def __str__(self):
         return f'Categoria: {self.categoria} \nAtaque: {self.ataque} \nDefensa: {self.defensa}' \
                f'\nVida: {self.vida} / {self.vida_maxima} \nVelocidad: {self.velocidad} \nArma: {self.arma} ' \
-               f'\nPociones: {self.pociones} \nMonedas de Oro: {self.monedas_de_oro}'
+               f'\nPociones: {self.pociones} \nManzanas: {self.pociones} \nMonedas de Oro: {self.monedas_de_oro}'
 
 
 class Personajes:
@@ -53,7 +54,7 @@ class Personajes:
 
 class Caballero(Player):
     def __init__(self):
-        super(Caballero, self).__init__("Caballero", 9, 20, 100, 100, 3, "Espada")
+        super(Caballero, self).__init__("Caballero", 4, 8, 100, 100, 3, "Espada")
 
 
 class Mago(Player):
@@ -68,7 +69,7 @@ class Arquero(Player):
 
 class Orko(Player):
     def __init__(self):
-        super(Orko, self).__init__("Orko", 8, 6, 20, 20, 2, "Mazo")
+        super(Orko, self).__init__("Orko", 8, 6, 14, 14, 2, "Mazo")
 
 
 class Elfo_Oscuro(Player):
@@ -89,17 +90,17 @@ class Jefe_Final(Player):
 
 class GiganteDeHierro(Player):
     def __init__(self):
-        super(GiganteDeHierro, self).__init__("Gigante de Hierro", 10, 4, 25, 25, 11, "Espada Gigante")
+        super(GiganteDeHierro, self).__init__("Gigante de Hierro", 10, 4, 17, 17, 11, "Espada Gigante")
 
 
 class Protego(Player):
     def __init__(self):
-        super(Protego, self).__init__("Troll de la montaña", 8, 5, 20, 20, 15, "Mazo de madera")
+        super(Protego, self).__init__("Troll de la montaña", 8, 5, 19, 19, 2, "Mazo de madera")
 
 
 class Merlin(Player):
     def __init__(self):
-        super(Merlin, self).__init__("Mago Supremo", 7, 4, 18, 18, 15, "Varita de Sauco")
+        super(Merlin, self).__init__("Mago Supremo", 7, 4, 18, 18, 5, "Varita de Sauco")
 
 
 class Hombre_Lobo(Player):
@@ -339,9 +340,11 @@ aprenderlo o 'n' si prefiere seguir por el camino\n""")
     if winner:
         gano(nombre)
         print("Ha salvado el Reino")
+        partidas_jugadas(nombre)
     else:
         perdio(nombre)
         print("Perdiste, el Reino ha caido y mueres")
+        partidas_jugadas(nombre)
 
 
 def atacar_ladron(jugador, nombre):
@@ -382,7 +385,6 @@ def batalla(jugador, nombre, enemigo):
         else:
             input("El {} va a atacarte con su {}, presiona Enter para continuar!".format(enemigo.categoria, enemigo.arma))
             resultado = tirar_dado(1, 6)
-            print(resultado)
             jugador.recibir_daño(resultado, enemigo)
             if jugador.esta_vivo():
                 print("{}: {} / {}\n{}: {} / {}\n".format(enemigo.categoria, enemigo.vida, enemigo.vida_maxima, nombre, jugador.vida, jugador.vida_maxima))
@@ -393,13 +395,11 @@ def batalla(jugador, nombre, enemigo):
 def jefe_final(jugador, boss, nombre):
     print(boss)
     while jugador.esta_vivo():
-        input("Presione Enter para tirar el dado.")
         resultado_tablero = tirar_dado(1, 6)
         print("El dado giro y obtuvo: {}".format(resultado_tablero))
 
         if resultado_tablero in (1, 3, 5):
             print("Ataca a tu enemigo!\n")
-            input("Presione Enter para tirar el dado.")
             resultado = tirar_dado(1, 6)
             print("Le sacas {} de energia a tu enemigo".format(resultado))
             boss.recibir_daño(resultado, jugador)
@@ -478,7 +478,7 @@ def conseguir_armas(jugador, nombre, arma, damage):
             ))
             jugador.ataque += damage
             jugador.arma = arma
-            print(jugador)
+            print(jugador, "\n")
             break
         else:
             print("Tiraste de la {} {} veces y tu puntajes es {}.\n".format(arma, contador, resultado))
@@ -497,6 +497,12 @@ Si tiraste el dado las 4 veces y no sumaste 10 la espada desaparecerá y no podr
 
 
 def sec_varita_sauco(jugador, nombre):
+    print("""Bienevido {} {}. Te encontraste con la tumba blanca de Album Dumbledore cerca del lago negro.  Podrás robar
+        la varita de su tumba pero ten cuidado, si haces mucho ruido las sirenas te atacaran y deberás huir.
+        Reglas:
+        Podras tirar el dado hasta 4 veces y deberas sumar 10 o más punto para obtener la Varita de Sauco.
+        Si tiraste el dado las 4 veces y no sumaste 10 deberás huir y ya no podrás ir a buscar la varita..
+            """.format(jugador.categoria, nombre))
     conseguir_armas(jugador, nombre, arma="Varita de Sauco", damage=4)
 
 
@@ -582,8 +588,8 @@ Pero si a pesar de la fogata ningun lobo te encuentra al despertar tendrás tu e
 
         else:
             print("La opción ingresada es incorrecta, vuelva a intertarlo")
-
         break
+
 
 def tiendas(jugador, nombre):
     pociones = 3
@@ -602,27 +608,43 @@ def tiendas(jugador, nombre):
             print("Tengo los siguientes articulos a la venta.\n")
             print("Pociones: {} Precio: {}. Te regenera {} de vida".format(pociones, PRECIO_POCION, VALOR_POCION))
             print("Manzanas: {} Precio: {}. Te regenera {} de vida".format(manzanas, PRECIO_MANZANA, VALOR_MANZANA))
-            articulo = input("¿Que desea comprar?, seleccione p (pociones) o m (manzanas)\n")
-            if articulo == 'p':
-                cantidad_pociones = int(input("Cuantas pociones vas a comprar, tengo {}\n".format(pociones)))
-                if cantidad_pociones > int(pociones):
-                    print("Solo tengo {} pociones".format(pociones))
-                else:
-                    pociones = pociones - int(cantidad_pociones)
-                    jugador.pociones += int(cantidad_pociones)
-                    print("Ahora tienes {} pociones y en la tienda me quedan {}\n".format(jugador.pociones, pociones))
-                    input("¿Algo mas?")
 
-            elif articulo == 'm':
-                cantidad = input(int("Cuantas manzanas vas a comprar, tengo {}".format(manzanas)))
-                if jugador.cantidad > manzanas:
-                    print("Solo tengo {} manzanas".format(pociones))
-                else:
-                    manzanas -= cantidad
-                    print("Ahora tienes {} manzanas y en la tienda me quedan {}".format(jugador.pociones, pociones))
-                    break
-            else:
-                print("La opción ingresada es incorrecta")
+            while True:
+                try:
+                    articulo = input("¿Que desea comprar?, seleccione p (pociones) o m (manzanas)\n")
+                    if articulo == 'p':
+                        cantidad_pociones = int(input("Cuantas pociones vas a comprar, tengo {}\n".format(pociones)))
+                        print("Tengo {} monedas de oro".format(jugador.monedas_de_oro))
+                        precio_total = cantidad_pociones * PRECIO_POCION
+                        if cantidad_pociones > int(pociones):
+                            print("Solo tengo {} pociones".format(pociones))
+                        elif precio_total > jugador.monedas_de_oro:
+                            print("Solo tengo {} monedas, no me alcanza".format(jugador.monedas_de_oro))
+                        else:
+                            pociones = pociones - int(cantidad_pociones)
+                            jugador.pociones += int(cantidad_pociones)
+                            jugador.monedas_de_oro -= precio_total
+                            print("Ahora tienes {} pociones y {} monedas y en la tienda me quedan {}".format(jugador.pociones,
+                                                                                                             jugador.monedas_de_oro, pociones))
+                            opcion = input()
+                            if opcion.lower() == 'y':
+                                input()
+                            elif opcion.lower() == 'n':
+                                break
+                        break
+
+                    elif articulo == 'm':
+                        cantidad = int(input("Cuantas manzanas vas a comprar, tengo {}".format(manzanas)))
+                        if jugador.cantidad > manzanas:
+                            print("Solo tengo {} manzanas".format(pociones))
+                        else:
+                            manzanas -= cantidad
+                            print("Ahora tienes {} manzanas y en la tienda me quedan {}".format(jugador.pociones, pociones))
+                            break
+                    else:
+                        print("La opción ingresada es incorrecta")
+                except:
+                    print("Solo numeros")
         else:
             print("Opción erronea")
 
