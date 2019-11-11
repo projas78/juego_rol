@@ -128,6 +128,7 @@ def tirar_dado(minimo, maximo):
 
     return resultado
 
+
 def mostrar_reglas():
     print("""Bienvenido a Mundo Medieval
     ===========================
@@ -207,6 +208,7 @@ def decir_bienvenido(nombre, jugador):
     print("Bienvenido", jugador.categoria, nombre)
     print("Su jugador tiene los siguientes atributos\n")
     jugador.pociones += 1
+    jugador.manzanas += 1 #gabi
     jugador.monedas_de_oro += 3
     print(jugador, "\n")
 
@@ -242,7 +244,7 @@ def tablero(jugador, nombre, boss):
     recorrer_tablero = 0
     while jugador.esta_vivo():
 
-        resultado = tirar_dado(8, 8)
+        resultado = tirar_dado(4, 4)
         print("El dado giro y obtuvo: {}".format(resultado))
         if recorrer_tablero < 10:
             recorrer_tablero = min(recorrer_tablero + resultado, 10)
@@ -371,19 +373,40 @@ def batalla(jugador, nombre, enemigo):
         print("El dado giro y obtuvo: {}".format(resultado_tablero))
 
         if resultado_tablero in (1, 3, 5):
-            print("Ataca a tu enemigo!")
-            resultado = tirar_dado(1, 6)
-            print("Le sacas {} de energía a tu enemigo con tu {}".format(resultado, jugador.arma))
-            enemigo.recibir_daño(resultado, jugador)
-            if enemigo.esta_vivo():
-                print("{}: {} / {}\n{}: {} / {}\n".format(enemigo.categoria, enemigo.vida, enemigo.vida_maxima, nombre, jugador.vida, jugador.vida_maxima))
-            else:
-                print("{}: 0 / {}\n{}: {} / {}\n".format(enemigo.categoria, enemigo.vida_maxima, nombre, jugador.vida, jugador.vida_maxima))
-                print("Ha ganado la pelea, continue jugando, obtiene {} moneda de oro".format(jugador.monedas_de_oro))
-                print(jugador)
-                break
+            opcion = input("Tienes {} / {} de vida.¿Quieres atacar o tomar algo de tu inventario? Ingrese 'a' o 'i'\n".format(jugador.vida, jugador.vida_maxima))
+            if opcion.lower() == 'a':
+                print("Ataca a tu enemigo!")
+                resultado = tirar_dado(1, 6)
+                print("Le sacas {} de energía a tu enemigo con tu {}".format(resultado, jugador.arma))
+                enemigo.recibir_daño(resultado, jugador)
+                if enemigo.esta_vivo():
+                    print("{}: {} / {}\n{}: {} / {}\n".format(enemigo.categoria, enemigo.vida, enemigo.vida_maxima, nombre, jugador.vida, jugador.vida_maxima))
+                else:
+                    print("{}: 0 / {}\n{}: {} / {}\n".format(enemigo.categoria, enemigo.vida_maxima, nombre, jugador.vida, jugador.vida_maxima))
+                    print("Ha ganado la pelea, continue jugando, obtiene {} moneda de oro".format(jugador.monedas_de_oro))
+                    print(jugador)
+                    break
+            elif opcion.lower() == 'i':
+                inventario = input("Tienes {} pociones y {} manzanas.  Que deseas usar? Ingrese 'p' o 'm'".format(jugador.pociones, jugador.manzanas))
+                if inventario == 'p':
+                    print("Tomaré una pocion")
+                    jugador.vida += 5
+                    if jugador.vida >= jugador.vida_maxima:
+                        jugador.vida = jugador.vida_maxima
+                        print("Tu vida es: {} / {}".format(jugador.vida, jugador.vida_maxima))
+                    else:
+                        print("Tu vida es: {} / {}".format(jugador.vida, jugador.vida_maxima))
+                elif inventario == 'm':
+                    print("Tomaré una manzana")
+                    jugador.vida += 2
+                    if jugador.vida >= jugador.vida_maxima:
+                        jugador.vida = jugador.vida_maxima
+                        print("Tu vida es: {} / {}".format(jugador.vida, jugador.vida_maxima))
+                    else:
+                        print("Tu vida es: {} / {}".format(jugador.vida, jugador.vida_maxima))
+
         else:
-            input("El {} va a atacarte con su {}, presiona Enter para continuar!".format(enemigo.categoria, enemigo.arma))
+            input("El {} va a atacarte con su {}, presiona Enter para continuar!".format(enemigo.categoria, enemigo.arma)) #gabi El Ladron va a atacarte con su Golpes
             resultado = tirar_dado(1, 6)
             jugador.recibir_daño(resultado, enemigo)
             if jugador.esta_vivo():
@@ -617,7 +640,7 @@ def tiendas(jugador, nombre):
                         print("Tengo {} monedas de oro".format(jugador.monedas_de_oro))
                         precio_total = cantidad_pociones * PRECIO_POCION
                         if cantidad_pociones > int(pociones):
-                            print("Solo tengo {} pociones".format(pociones))
+                            print("Solo tengo {} pociones".format(pociones)) #gabi
                         elif precio_total > jugador.monedas_de_oro:
                             print("Solo tengo {} monedas, no me alcanza".format(jugador.monedas_de_oro))
                         else:
