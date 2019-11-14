@@ -342,12 +342,13 @@ aprenderlo o 'n' si prefiere seguir por el camino\n""")
     if winner:
         gano(nombre)
         print("Ha salvado el Reino")
-        partidas_jugadas(nombre)
+        partidas = partidas_jugadas(nombre)
+        print(partidas)
     else:
         perdio(nombre)
         print("Perdiste, el Reino ha caido y mueres")
-        partidas_jugadas(nombre)
-
+        partidas = partidas_jugadas(nombre)
+        print(partidas)
 
 def atacar_ladron(jugador, nombre):
     ladron = Ladron()
@@ -373,7 +374,9 @@ def batalla(jugador, nombre, enemigo):
         print("El dado giro y obtuvo: {}".format(resultado_tablero))
 
         if resultado_tablero in (1, 3, 5):
-            opcion = input("Tienes {} / {} de vida.¿Quieres atacar o tomar algo de tu inventario? Ingrese 'a' o 'i'\n".format(jugador.vida, jugador.vida_maxima))
+            #while True:
+            opcion = input("""Tienes {} / {} de vida.¿Quieres atacar o tomar algo de tu inventario? 
+Ingrese 'a' o 'i'\n""".format(jugador.vida, jugador.vida_maxima))
             if opcion.lower() == 'a':
                 print("Ataca a tu enemigo!")
                 resultado = tirar_dado(1, 6)
@@ -404,6 +407,8 @@ def batalla(jugador, nombre, enemigo):
                         print("Tu vida es: {} / {}".format(jugador.vida, jugador.vida_maxima))
                     else:
                         print("Tu vida es: {} / {}".format(jugador.vida, jugador.vida_maxima))
+            else:
+                print("La opción ingresasa es incorrecta")
 
         else:
             input("El {} va a atacarte con su {}, presiona Enter para continuar!".format(enemigo.categoria, enemigo.arma)) #gabi El Ladron va a atacarte con su Golpes

@@ -85,3 +85,5 @@ def partidas_jugadas(nombre):
     cursor.execute("select * from jugadores where nombre = ?", lista)
 
     conexion.close()
+
+    return partidas_jugadas
